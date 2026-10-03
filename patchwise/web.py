@@ -164,7 +164,8 @@ def scrub(text: str) -> str:
         v = ENV(k)
         if v and len(v) > 6:
             text = text.replace(v, "[redacted]")
-    return re.sub(r"(Bearer\s+)[A-Za-z0-9._\-]{12,}", r"\1[redacted]", text)
+    text = re.sub(r"(Bearer\s+)[A-Za-z0-9._\-]{12,}", r"\1[redacted]", text)
+    return re.sub(r"(?:/tmp|" + re.escape(str(WORK)) + r")/[\w./\-]*/", "", text)  # no server paths
 
 
 def summarize(data: dict) -> dict:

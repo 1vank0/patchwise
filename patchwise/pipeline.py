@@ -89,7 +89,7 @@ def run(repo: Path, settings: Settings | None = None, *, do_fix: bool = True, lo
     llm = LLM(settings)
     tavily = Tavily(settings)
     r = Run(str(repo), time.time(), mode="online" if llm.online else "offline-heuristic")
-    log(f"[1/4] Discovering dependencies in {repo} …")
+    log(f"[1/4] Discovering dependencies in {repo.name} …")
     deps = discover(repo)
     r.deps_scanned = len(deps)
     findings = lookup(deps)
