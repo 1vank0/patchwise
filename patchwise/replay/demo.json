@@ -327,7 +327,7 @@
   ]
  ],
  "report": {
-  "repo": "/tmp/patchwise-web/pw-rec-t5c5at2o/statuspage",
+  "repo": "demo/statuspage",
   "name": "statuspage",
   "mode": "online",
   "generated": "2026-10-03 17:27",

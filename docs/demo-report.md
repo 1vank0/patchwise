@@ -1,6 +1,6 @@
 # Patchwise report
 
-Repo: `/workspace/moneymaker/hackathon/patchwise/demo/statuspage` · mode: **online** · 6 pinned deps · 32 advisories · 77.4s
+Repo: `demo/statuspage` · mode: **online** · 6 pinned deps · 32 advisories · 77.4s
 
 **6 fix now · 0 need review · 26 not exploitable here**
 
