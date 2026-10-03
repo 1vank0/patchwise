@@ -46,9 +46,19 @@ class FixResult:
     notes: list = field(default_factory=list)
 
 
+SECRET_ENV = re.compile(r"(KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL|AUTH)", re.I)
+
+
+def safe_env(extra: dict | None = None) -> dict:
+    """Environment for project code (installs, tests): never hand API keys or tokens to it."""
+    env = {k: v for k, v in os.environ.items() if not SECRET_ENV.search(k)}
+    env.update(extra or {})
+    return env
+
+
 def _run(cmd: str, cwd: Path, env: dict | None = None, timeout: int = 900) -> tuple[int, str]:
     p = subprocess.run(cmd, cwd=cwd, shell=True, capture_output=True, text=True, timeout=timeout,
-                       env={**os.environ, **(env or {})})
+                       env=safe_env(env))
     out = p.stdout + "\n" + p.stderr
     if len(out) > 14000:
         out = out[:3000] + "\n…[truncated]…\n" + out[-11000:]

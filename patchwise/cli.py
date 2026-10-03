@@ -24,6 +24,10 @@ def main(argv=None) -> int:
                     help="requirements file(s) to install for tests (repeatable; default: all found)")
     ap.add_argument("--with", dest="extra", action="append", default=[],
                     help="extra package(s) needed only to run the tests (repeatable)")
+    ap.add_argument("--fix-scope", choices=["fix-now", "review", "all"],
+                    help="which advisories the verified fix upgrades (default: fix-now)")
+    ap.add_argument("--deploy-os", choices=["linux", "windows", "macos"],
+                    help="deployment OS; advisories limited to other platforms are not reachable (default: linux)")
     ap.add_argument("--max-cost", type=float, help="hard USD ceiling for model spend in this run")
     a = ap.parse_args(argv)
     s = Settings()
@@ -35,6 +39,10 @@ def main(argv=None) -> int:
     s.extra_test_packages = a.extra
     if a.max_cost is not None:
         s.max_cost_usd = a.max_cost
+    if a.fix_scope:
+        s.fix_scope = a.fix_scope
+    if a.deploy_os:
+        s.deploy_os = a.deploy_os
     if a.offline:
         s.offline = True
     if not s.llm_available:

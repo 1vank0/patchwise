@@ -37,7 +37,7 @@ class Settings:
     # Offline mode uses a deterministic heuristic stand-in for the LLM. For tests/dev only;
     # it is NOT the product and is clearly labeled in reports.
     offline: bool = field(default_factory=lambda: os.environ.get("PATCHWISE_OFFLINE", "0") == "1")
-    max_repair_iterations: int = int(os.environ.get("PATCHWISE_MAX_REPAIRS", "5"))
+    max_repair_iterations: int = int(os.environ.get("PATCHWISE_MAX_REPAIRS", "8"))
     test_command: str | None = os.environ.get("PATCHWISE_TEST_CMD")
     test_timeout: int = int(os.environ.get("PATCHWISE_TEST_TIMEOUT", "900"))
     python_version: str | None = os.environ.get("PATCHWISE_PYTHON")
@@ -46,6 +46,11 @@ class Settings:
     extra_test_packages: list = field(default_factory=list)
     # Hard ceiling on model spend per run (USD); calls stop once it is reached.
     max_cost_usd: float = float(os.environ.get("PATCHWISE_MAX_COST", "1.00"))
+    # Which advisories the verified fix upgrades: "fix-now" (default), "review" (fix-now + review)
+    # or "all" (every advisory with a fixed version, reachable or not).
+    fix_scope: str = os.environ.get("PATCHWISE_FIX_SCOPE", "fix-now")
+    # OS the project is deployed on; advisories limited to other platforms are not reachable.
+    deploy_os: str = os.environ.get("PATCHWISE_DEPLOY_OS", "linux")
     llm_timeout: float = float(os.environ.get("PATCHWISE_LLM_TIMEOUT", "180"))
     llm_retries: int = int(os.environ.get("PATCHWISE_LLM_RETRIES", "4"))
 
