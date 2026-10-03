@@ -41,7 +41,8 @@ class FixResult:
     patch_tests: TestRun | None = None
     review: dict | None = None   # post-fix review of the code changes: {"ok": bool, "concerns": [...]}
     patch_applies: bool = False   # fix.patch re-applied to a pristine copy with git apply --check
-    status: str = "not_run"   # verified | verified_with_code_changes | tests_fail | no_tests | skipped
+    status: str = "not_run"   # verified | verified_with_code_changes | tests_pass_needs_review |
+    #                           tests_pass_patch_unverified | tests_fail | no_tests | skipped
     notes: list = field(default_factory=list)
 
 
@@ -887,7 +888,10 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
     if run.ok and run.summary == "no tests collected":
         res.status = "no_tests"
     elif run.ok and res.patch_applies and res.patch_tests is not None and res.patch_tests.ok:
-        res.status = "verified_with_code_changes" if res.repairs else "verified"
+        if res.review and not res.review.get("ok"):
+            res.status = "tests_pass_needs_review"  # green, but the reviewer found lost behaviour
+        else:
+            res.status = "verified_with_code_changes" if res.repairs else "verified"
     elif run.ok:
         res.status = "tests_pass_patch_unverified"
     else:
