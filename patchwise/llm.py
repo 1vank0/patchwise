@@ -199,7 +199,11 @@ class LLM:
                                  "cost_usd": round(cost, 6), "tag": tag}) + "\n")
 
     def _create(self, model: str, messages: list, max_tokens: int, temperature: float, thinking: bool):
-        return self._client.chat.completions.create(
+        # short extraction calls on the fast tier get a tighter timeout, so one hung request
+        # can't stall the research phase for minutes (retries still apply)
+        fast = model == self.settings.models.get("fast")
+        client = self._client.with_options(timeout=self.settings.fast_timeout) if fast else self._client
+        return client.chat.completions.create(
             model=model, messages=messages, max_tokens=max_tokens, temperature=temperature,
             extra_body={"chat_template_kwargs": {"enable_thinking": thinking}})
 

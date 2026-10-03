@@ -52,6 +52,7 @@ class Settings:
     # OS the project is deployed on; advisories limited to other platforms are not reachable.
     deploy_os: str = os.environ.get("PATCHWISE_DEPLOY_OS", "linux")
     llm_timeout: float = float(os.environ.get("PATCHWISE_LLM_TIMEOUT", "180"))
+    fast_timeout: float = float(os.environ.get("PATCHWISE_FAST_TIMEOUT", "45"))
     llm_retries: int = int(os.environ.get("PATCHWISE_LLM_RETRIES", "4"))
 
     @property

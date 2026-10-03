@@ -2,6 +2,7 @@
 actually vulnerable* (symbols, trigger conditions), which OSV data usually lacks."""
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import asdict, dataclass, field
 
@@ -33,7 +34,7 @@ class Intel:
 class Tavily:
     def __init__(self, settings: Settings, client: httpx.Client | None = None):
         self.s = settings
-        self.client = client or httpx.Client(timeout=40)
+        self.client = client or httpx.Client(timeout=float(os.environ.get("PATCHWISE_TAVILY_TIMEOUT", "20")))
         self.calls = 0
 
     @property

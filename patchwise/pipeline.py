@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -98,11 +99,18 @@ def run(repo: Path, settings: Settings | None = None, *, do_fix: bool = True, lo
     log(f"      {len(deps)} pinned deps, {len(findings)} vulnerable, {nv} advisories (OSV.dev)")
     log("[2/4] Researching advisories (Tavily + Nemotron) …")
     pairs = [(f, v) for f in findings for v in f.vulns]
+    lk = threading.Lock()
+
+    def _research(fv):  # log each advisory as soon as its research finishes, so the live log never stalls
+        f, v = fv
+        i = research(f, v, llm, tavily)
+        with lk:
+            log(f"      {f.dep.name} {v.id}: {', '.join(i.vulnerable_symbols[:3])[:90]}"
+                + (f"  [{'/'.join(i.platforms)} only]" if i.platforms else ""))
+        return i
+
     with ThreadPoolExecutor(max_workers=4) as ex:
-        intels = list(ex.map(lambda fv: research(fv[0], fv[1], llm, tavily), pairs))
-    for (f, v), i in zip(pairs, intels):
-        log(f"      {f.dep.name} {v.id}: {', '.join(i.vulnerable_symbols[:3])[:90]}"
-            + (f"  [{'/'.join(i.platforms)} only]" if i.platforms else ""))
+        intels = list(ex.map(_research, pairs))
     log("[3/4] Reachability analysis against your code …")
     idx = PyIndex.build(repo)
     intel_of = {v.id: i for (f, v), i in zip(pairs, intels)}
