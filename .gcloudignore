@@ -1,0 +1,8 @@
+# Files not uploaded to Cloud Build by `gcloud run deploy --source .`
+.git
+.gitignore
+.venv
+**/__pycache__
+**/.pytest_cache
+**/.patchwise
+docs/img

@@ -123,12 +123,21 @@ GUARD = Guard()
 
 
 def client_ip(req: Request) -> str:
-    for h in ("fly-client-ip", "cf-connecting-ip", "x-real-ip"):
-        if req.headers.get(h):
-            return req.headers[h].strip()
-    xff = req.headers.get("x-forwarded-for")
-    if xff:
-        return xff.split(",")[0].strip()
+    """Client IP for rate limiting. PATCHWISE_CLIENT_IP picks the header the platform guarantees:
+    "fly" (Fly-Client-IP), "xff-last" (Cloud Run / Google front ends append the real client IP to
+    X-Forwarded-For, so earlier entries can be spoofed), or "auto" (best effort, local use)."""
+    mode = os.environ.get("PATCHWISE_CLIENT_IP", "auto").lower()
+    xff = [p.strip() for p in req.headers.get("x-forwarded-for", "").split(",") if p.strip()]
+    if mode == "xff-last" and xff:
+        return xff[-1]
+    if mode == "fly" and req.headers.get("fly-client-ip"):
+        return req.headers["fly-client-ip"].strip()
+    if mode == "auto":
+        for h in ("fly-client-ip", "cf-connecting-ip", "x-real-ip"):
+            if req.headers.get(h):
+                return req.headers[h].strip()
+        if xff:
+            return xff[0]
     return req.client.host if req.client else "?"
 
 

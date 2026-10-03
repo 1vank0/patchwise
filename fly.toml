@@ -8,6 +8,7 @@ primary_region = "ams"            # near Nebius Token Factory (EU); any region w
   dockerfile = "Dockerfile"
 
 [env]
+  PATCHWISE_CLIENT_IP = "fly"
   PORT = "8080"
   PATCHWISE_WEB_MAX_COST = "0.40"
   PATCHWISE_DAILY_BUDGET = "0.50"
