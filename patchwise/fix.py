@@ -712,8 +712,22 @@ def migration_notes(tavily: Tavily | None, upgrades: dict) -> str:
     return "\n".join(out)[:5000]
 
 
+def sandbox_dir(repo: Path) -> Path:
+    key = hashlib.sha1(str(repo.resolve()).encode()).hexdigest()[:10]
+    return Path(tempfile.gettempdir()) / "patchwise" / f"{repo.name}-{key}"
+
+
 def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavily: Tavily | None,
         log=print) -> FixResult:
+    try:
+        return _fix(repo, findings, settings, llm, tavily, log)
+    finally:
+        if os.environ.get("PATCHWISE_CLEAN_SANDBOX") == "1":  # servers: don't accumulate venvs
+            shutil.rmtree(sandbox_dir(repo), ignore_errors=True)
+
+
+def _fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavily: Tavily | None,
+         log=print) -> FixResult:
     res = FixResult()
     pins = {f.dep.name: f.min_fix for f in findings if f.dep.ecosystem == "PyPI" and f.min_fix}
     res.upgrades = {f.dep.name: (f.dep.version, f.min_fix) for f in findings
@@ -722,8 +736,7 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
         res.status = "skipped"
         res.notes.append("No PyPI findings with a known fixed version.")
         return res
-    key = hashlib.sha1(str(repo.resolve()).encode()).hexdigest()[:10]
-    sb = Sandbox(repo, Path(tempfile.gettempdir()) / "patchwise" / f"{repo.name}-{key}", settings)
+    sb = Sandbox(repo, sandbox_dir(repo), settings)
     log("  running baseline tests…")
     res.baseline = sb.test()
     if not res.baseline.ok:

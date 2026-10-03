@@ -317,3 +317,49 @@ def test_project_code_never_sees_api_keys(monkeypatch):
     env = safe_env({"VIRTUAL_ENV": "/v"})
     assert "NEBIUS_API_KEY" not in env and "GITHUB_TOKEN" not in env and env["VIRTUAL_ENV"] == "/v"
     assert "PATH" in env
+
+
+# --- web demo guards ------------------------------------------------------------------------
+
+def test_web_never_exposes_the_key_and_validates_input(monkeypatch):
+    from fastapi.testclient import TestClient
+    from patchwise import web
+    monkeypatch.setenv("NEBIUS_API_KEY", "tf-super-secret-value")
+    c = TestClient(web.app)
+    for path in ("/", "/api/config", "/api/demo", "/healthz"):
+        assert "tf-super-secret-value" not in c.get(path).text
+    assert c.post("/api/run", json={"mode": "github", "repo": "https://evil.example/x"}).status_code == 400
+    assert c.post("/api/run", json={"mode": "github", "repo": "file:///etc/passwd"}).status_code == 400
+    assert web.scrub("auth tf-super-secret-value ok") == "auth [redacted] ok"
+
+
+def test_web_guard_limits_concurrency_rate_and_budget(monkeypatch, tmp_path):
+    from fastapi import HTTPException
+    from patchwise import web
+    monkeypatch.setenv("NEBIUS_API_KEY", "k" * 20)
+    monkeypatch.setattr(web, "WORK", tmp_path)
+    g = web.Guard()
+    g.acquire("1.2.3.4")
+    with pytest.raises(HTTPException) as e:  # one live run at a time
+        g.acquire("5.6.7.8")
+    assert e.value.status_code == 429
+    g.release()
+    g.acquire("1.2.3.4"); g.release()
+    g.acquire("1.2.3.4"); g.release()
+    with pytest.raises(HTTPException):  # per-IP hourly limit
+        g.acquire("1.2.3.4")
+    g.add_spend(web.DAILY_BUDGET)  # daily budget exhausted -> live runs off, replay still offered
+    assert g.live_status()[0] is False
+
+
+def test_web_replay_serves_a_recorded_run(monkeypatch, tmp_path):
+    from patchwise import web
+    if not web.REPLAY.exists():
+        pytest.skip("no recorded replay")
+    monkeypatch.setattr(web, "WORK", tmp_path)
+    job = web.Job("replay", "t")
+    monkeypatch.setattr(web.time, "sleep", lambda s: None)
+    web.replay_worker(job)
+    assert job.done and not job.error and job.summary["raw"] > 0
+    html = (job.out / "report.html").read_text()
+    assert "Before → after triage" in html and "&#34;" not in html.split("</style>")[0]

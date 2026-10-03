@@ -1,0 +1,153 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Patchwise: which vulnerability alerts can actually hurt you?</title>
+<meta name="description" content="Reachability-aware dependency triage and verified fixes, powered by NVIDIA Nemotron on Nebius Token Factory with live Tavily research.">
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#0f172a;--muted:#5b6475;--line:#e3e6ec;--red:#d1242f;--red-bg:#fff1f0;--amber:#9a6700;--amber-bg:#fff8db;
+--green:#1a7f37;--green-bg:#eafbef;--blue:#0b5cff;--nv:#76b900}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:22px 20px 70px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:20px}
+.logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#0b5cff,#76b900);display:grid;place-items:center;color:#fff}
+.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{font-size:12px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 10px;color:var(--muted)}
+.badge b{color:var(--ink)}.badge .nv{color:var(--nv);font-weight:800}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:26px;align-items:center;margin-top:34px}
+@media (max-width:880px){.hero{grid-template-columns:1fr}}
+h1{font-size:40px;line-height:1.12;letter-spacing:-.025em;margin:0 0 14px}
+.lede{font-size:17px;color:#334155;margin:0 0 16px}
+.how{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+.how div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--muted)}
+.how b{display:block;color:var(--ink);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 6px 24px rgba(15,23,42,.06)}
+.btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-radius:12px;padding:14px 16px;font:inherit;cursor:pointer;transition:transform .05s,box-shadow .15s}
+.btn:active{transform:translateY(1px)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn .ic{font-size:20px;width:28px;text-align:center}.btn b{display:block;font-size:16px}.btn small{display:block;font-size:12.5px;opacity:.85}
+.primary{background:linear-gradient(135deg,#0b5cff,#2f6bff);color:#fff;box-shadow:0 6px 16px rgba(11,92,255,.25)}
+.secondary{background:#f1f5f9;color:var(--ink);margin-top:10px}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12.5px;margin:18px 0 10px}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
+.gh{display:flex;gap:8px}.gh input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit}
+.gh button{border:0;border-radius:10px;background:var(--ink);color:#fff;padding:0 16px;font:inherit;font-weight:600;cursor:pointer}
+.guard{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
+.msg{margin-top:10px;font-size:13.5px;border-radius:10px;padding:8px 12px;display:none}.msg.err{display:block;background:var(--red-bg);color:var(--red)}.msg.info{display:block;background:#eef2ff;color:#3730a3}
+details.demo{margin-top:14px;font-size:13.5px}details.demo summary{cursor:pointer;color:var(--muted)}
+details.demo pre{background:#0d1117;color:#e6edf3;border-radius:10px;padding:10px 12px;overflow:auto;font:12px/1.5 ui-monospace,Menlo,monospace;max-height:260px}
+#run{display:none;margin-top:34px}
+.runhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.runhead h2{margin:0;font-size:20px}.timer{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-top:14px}@media (max-width:880px){.grid{grid-template-columns:1fr}}
+.term{background:#0b1020;color:#cbd5e1;border-radius:14px;padding:14px 0;height:440px;overflow:auto;font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:inset 0 0 0 1px #1e293b}
+.term .l{padding:0 16px;white-space:pre-wrap;word-break:break-word}.term .step{color:#fff;font-weight:700;margin-top:6px}
+.term .fixnow{color:#ff8a8a}.term .rev{color:#f2cc60}.term .dep{color:#7ee787}.term .rep{color:#d2a8ff}.term .warn{color:#ffa657}.term .dim{color:#64748b}
+.steps{list-style:none;margin:0;padding:0}.steps li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--line)}
+.steps li:last-child{border:0}.dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:12px;color:#fff;margin-top:1px}
+.steps li.active .dot{border-color:var(--blue);background:radial-gradient(circle,var(--blue) 40%,transparent 45%);animation:pulse 1.2s infinite}
+.steps li.done .dot{background:var(--green);border-color:var(--green)}.steps li.done .dot:after{content:"✓"}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(11,92,255,.15)}}
+.steps b{display:block;font-size:14.5px}.steps small{color:var(--muted);font-size:12.5px}
+.result{display:none;margin-top:18px}
+.ba{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.raw{text-align:center;min-width:120px}.raw .n{font-size:46px;font-weight:800;line-height:1;color:#334155}.raw .l{font-size:13px;color:var(--muted)}
+.arrow{font-size:28px;color:#94a3b8}.tri{display:flex;gap:10px;flex:1;min-width:280px}
+.t{flex:1;border-radius:12px;padding:12px 8px;text-align:center}.t .n{font-size:34px;font-weight:800;line-height:1.1}.t .l{font-size:12.5px;font-weight:650}
+.t.fix{background:var(--red-bg);color:var(--red)}.t.rev{background:var(--amber-bg);color:var(--amber)}.t.ok{background:var(--green-bg);color:var(--green)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}@media (max-width:880px){.facts{grid-template-columns:repeat(2,1fr)}}
+.fact{border:1px solid var(--line);border-radius:12px;padding:10px 12px}.fact span{display:block;font-size:12px;color:var(--muted)}.fact b{font-size:15px}
+.good{color:var(--green)}.warnc{color:var(--amber)}.bad{color:var(--red)}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.links a{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--card);font-size:13.5px;font-weight:600}
+.links a.main{background:var(--ink);color:#fff;border-color:var(--ink)}
+iframe{width:100%;height:1100px;border:1px solid var(--line);border-radius:16px;margin-top:18px;background:#fff}
+footer{margin-top:50px;font-size:12.5px;color:var(--muted);text-align:center}
+</style></head><body><div class="wrap">
+<nav><div class="brand"><div class="logo">⛨</div>Patchwise</div>
+<div class="badges"><span class="badge"><span class="nv">NVIDIA</span> <b>Nemotron</b></span><span class="badge">on <b>Nebius Token Factory</b></span><span class="badge">research by <b>Tavily</b></span><span class="badge">Apache-2.0</span></div></nav>
+
+<section class="hero">
+ <div>
+  <h1>Your scanner says 32 vulnerabilities. Which ones can actually hurt <i>this</i> code?</h1>
+  <p class="lede">Patchwise researches every advisory live, checks whether your code reaches the vulnerable function, and cites <code>file:line</code>. Then it builds the smallest upgrade that keeps your tests green, and repairs breaking changes in a sandbox.</p>
+  <div class="how">
+   <div><b>1 · Scan</b>Pinned deps → OSV.dev advisories</div>
+   <div><b>2 · Research</b>Tavily + Nemotron Lightning find the vulnerable functions</div>
+   <div><b>3 · Reachability</b>Nemotron Super judges your code, with citations</div>
+   <div><b>4 · Verified fix</b>Upgrade, run tests, Nemotron Ultra repairs breakages</div>
+  </div>
+ </div>
+ <div class="card">
+  <button class="btn primary" id="bLive"><span class="ic">▶</span><span><b>Run live on the demo project</b><small id="liveSub">Full pipeline incl. sandboxed upgrade, tests & AI code repair · about 1–2 min</small></span></button>
+  <button class="btn secondary" id="bReplay"><span class="ic">⏯</span><span><b>Instant replay</b><small>A recorded live run of the same demo, in about 30 s, using no credits</small></span></button>
+  <div class="or">or analyze a public GitHub repo (triage only)</div>
+  <form class="gh" id="fGh"><input id="repo" placeholder="https://github.com/owner/name" autocomplete="off" spellcheck="false"><button>Analyze</button></form>
+  <div class="msg" id="msg"></div>
+  <div class="guard" id="guard">Live runs: one at a time, capped per run, rate-limited per visitor.</div>
+  <details class="demo"><summary>What's in the demo project?</summary><div id="demoFiles">Loading…</div></details>
+ </div>
+</section>
+
+<section id="run">
+ <div class="runhead"><h2 id="runTitle">Running…</h2><span class="timer" id="timer">0:00</span></div>
+ <div class="grid">
+  <div class="term" id="term" aria-live="polite"></div>
+  <div class="card" style="padding:16px 18px"><ul class="steps" id="steps">
+   <li data-k="1"><span class="dot"></span><span><b>Scan</b><small>Pinned dependencies → OSV.dev</small></span></li>
+   <li data-k="2"><span class="dot"></span><span><b>Research</b><small>Tavily search + Nemotron Lightning</small></span></li>
+   <li data-k="3"><span class="dot"></span><span><b>Reachability</b><small>Nemotron Super, with file:line citations</small></span></li>
+   <li data-k="4"><span class="dot"></span><span><b>Verified fix</b><small>Sandbox upgrade, tests, Nemotron Ultra repair</small></span></li>
+   <li data-k="5"><span class="dot"></span><span><b>Report</b><small>HTML · fix.patch · OpenVEX</small></span></li>
+  </ul></div>
+ </div>
+ <div class="result card" id="result">
+  <div class="ba"><div class="raw"><div class="n" id="rRaw">–</div><div class="l">raw alerts</div></div><div class="arrow">→</div>
+  <div class="tri"><div class="t fix"><div class="n" id="rFix">–</div><div class="l">fix now</div></div><div class="t rev"><div class="n" id="rRev">–</div><div class="l">needs review</div></div><div class="t ok"><div class="n" id="rOk">–</div><div class="l">not reachable</div></div></div></div>
+  <div class="facts"><div class="fact"><span>Verified fix</span><b id="rStatus">–</b></div><div class="fact"><span>Tests before → after</span><b id="rTests">–</b></div>
+  <div class="fact"><span>Model cost</span><b id="rCost">–</b></div><div class="fact"><span>Wall time</span><b id="rTime">–</b></div></div>
+  <div class="links" id="links"></div>
+ </div>
+ <iframe id="frame" title="Full report" style="display:none"></iframe>
+</section>
+<footer>Patchwise · built for the Nebius × NVIDIA hackathon · NVIDIA Nemotron via Nebius Token Factory · Tavily · OSV.dev</footer>
+</div>
+<script>
+const $=id=>document.getElementById(id);let cfg={},es=null,t0=0,tick=null,cur=0;
+function msg(t,kind){const m=$('msg');m.className='msg '+(kind||'err');m.textContent=t;if(!t)m.className='msg'}
+async function loadCfg(){try{cfg=await (await fetch('/api/config')).json()}catch(e){cfg={}}
+ const g=[];if(cfg.live){g.push(`Live runs: one at a time · max $${cfg.max_cost.toFixed(2)} of model spend each · ${cfg.runs_left} left for you this hour · ${Math.round(cfg.timeout/60)} min time limit.`)}
+ else{g.push(cfg.why||'Live runs are unavailable right now.');$('bLive').disabled=true;$('liveSub').textContent='Unavailable right now: use the instant replay';}
+ g.push(`GitHub repos: public only, ≤ ${cfg.max_repo_mb||40} MB, triage only (their tests are never run on this server).`);
+ if(!cfg.replay)$('bReplay').disabled=true;$('guard').textContent=g.join(' ')}
+async function loadDemo(){try{const f=await (await fetch('/api/demo')).json();$('demoFiles').innerHTML='';
+ for(const [k,v] of Object.entries(f)){const h=document.createElement('div');h.style.margin='8px 0 4px';h.innerHTML='<code></code>';h.firstChild.textContent=k;
+ const p=document.createElement('pre');p.textContent=v;$('demoFiles').append(h,p)}}catch(e){$('demoFiles').textContent='unavailable'}}
+function cls(t){if(/^\[\d\/4\]/.test(t))return'step';if(/^\s+(FIX NOW|fix-now)\s/.test(t))return'fixnow';if(/^\s+(REVIEW|review)\s/.test(t))return'rev';
+ if(/^\s+(not reachable|deprioritize)\s/.test(t))return'dep';if(/repair|Ultra|round/i.test(t))return'rep';if(/^!|fail|error/i.test(t))return'warn';if(/^\s{6}\S+ (GHSA|PYSEC|CVE)/.test(t))return'dim';return''}
+function setStep(k){cur=Math.max(cur,k);document.querySelectorAll('#steps li').forEach(li=>{const n=+li.dataset.k;li.className=n<cur?'done':(n===cur?'active':'')})}
+function addLine(t){const term=$('term');const d=document.createElement('div');d.className='l '+cls(t);d.textContent=t;term.append(d);
+ const m=t.match(/^\[(\d)\/4\]/);if(m)setStep(+m[1]);if(term.scrollHeight-term.scrollTop-term.clientHeight<120)term.scrollTop=term.scrollHeight}
+function fmt(s){s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function busy(on){['bLive','bReplay'].forEach(i=>$(i).disabled=on||(i==='bLive'&&!cfg.live)||(i==='bReplay'&&!cfg.replay));document.querySelector('#fGh button').disabled=on}
+async function start(body,title){msg('');busy(true);
+ let r;try{r=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){msg('Network error');busy(false);return}
+ const j=await r.json().catch(()=>({}));if(!r.ok){msg(j.detail||'Could not start the run');busy(false);loadCfg();return}
+ $('run').style.display='block';$('result').style.display='none';$('frame').style.display='none';$('term').innerHTML='';cur=0;setStep(1);
+ $('runTitle').textContent=title;t0=Date.now();clearInterval(tick);tick=setInterval(()=>$('timer').textContent=fmt((Date.now()-t0)/1000),500);
+ $('run').scrollIntoView({behavior:'smooth'});follow(j.id)}
+function follow(id){if(es)es.close();es=new EventSource('/api/jobs/'+id+'/events');
+ es.addEventListener('log',e=>addLine(JSON.parse(e.data).text));
+ es.addEventListener('done',e=>{es.close();clearInterval(tick);const d=JSON.parse(e.data);busy(false);loadCfg();
+  if(d.error&&!d.summary){addLine('! '+d.error);$('runTitle').textContent='Run stopped';return}
+  setStep(6);$('runTitle').textContent='Done';show(id,d.summary)});
+ es.onerror=()=>{}}
+function show(id,s){if(!s)return;$('result').style.display='block';$('rRaw').textContent=s.raw;$('rFix').textContent=s.counts['fix-now'];
+ $('rRev').textContent=s.counts.review;$('rOk').textContent=s.counts.deprioritize;
+ const st=s.fix_status||'triage only';const good=/^verified/.test(st),warn=/needs_review|unverified|no_tests|skipped/.test(st);
+ $('rStatus').innerHTML='';const sp=document.createElement('span');sp.className=s.fix_status?(good?'good':(warn?'warnc':'bad')):'';sp.textContent=(good?'✔ ':'')+st.replace(/_/g,' ')+(s.repairs?` · ${s.repairs} repair round${s.repairs>1?'s':''}`:'');$('rStatus').append(sp);
+ $('rTests').textContent=s.tests&&s.tests[0]?(s.tests[0].replace(/ in [\d.]+s/,'')+' → '+(s.tests[1]||'–').replace(/ in [\d.]+s/,'').replace(/, \d+ warnings?/,'')):'–';
+ $('rCost').textContent=`$${(s.cost||0).toFixed(3)} · ${s.calls} calls`;$('rTime').textContent=s.seconds?Math.round(s.seconds)+' s':'–';
+ const L=[['report','Open full report','main'],['patch','fix.patch'],['openvex','OpenVEX'],['json','report.json']];
+ $('links').innerHTML='';for(const [k,t,c] of L){if(k==='patch'&&!s.fix_status)continue;const a=document.createElement('a');a.href='/jobs/'+id+'/'+k;a.target='_blank';a.textContent=t;if(c)a.className=c;$('links').append(a)}
+ const f=$('frame');f.src='/jobs/'+id+'/report';f.style.display='block'}
+$('bLive').onclick=()=>start({mode:'demo'},'Live run · demo project (statuspage)');
+$('bReplay').onclick=()=>start({mode:'replay'},'Instant replay · recorded live run (statuspage)');
+$('fGh').onsubmit=e=>{e.preventDefault();const u=$('repo').value.trim();if(!/^https:\/\/github\.com\/[\w.\-]+\/[\w.\-]+\/?$/.test(u)){msg('Enter a URL like https://github.com/owner/name');return}
+ start({mode:'github',repo:u},'Triage · '+u.replace('https://github.com/',''))};
+loadCfg();loadDemo();
+</script></body></html>
