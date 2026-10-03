@@ -622,10 +622,11 @@ def validate_pin_bumps(sb: Sandbox, bumps, security: dict[str, str],
                 continue
             if not pv.is_prerelease and pv > now and files and not all(f.get("yanked") for f in files):
                 avail.append(pv)
-        above = [pv for pv in avail if pv >= want]
-        # lowest release satisfying the request; if the model named a version that does not
-        # exist yet (e.g. 4.0.2 when 4.0.0 is the latest), the newest real release
-        best = min(above) if above else (max(avail) if avail else None)
+        # A repair bump exists because a third-party package broke against the upgraded ones;
+        # its newest release is the likeliest to support them (seen live: the model asked for
+        # flask-babel 3.0.0, which still caps Flask<3; 4.0.0 works). If the newest release is
+        # not installable here, the resolver step after this falls back to the lowest one that is.
+        best = max(avail) if avail and max(avail) >= want else None
         if best:
             ok[k] = str(best)
         elif rejected is not None:
@@ -781,7 +782,8 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
                     + "\n\nCurrent diff:\n" + sb.diff()[-5000:]), pins=", ".join(f"{k}=={v}" for k, v in sb.current_pins().items())[:3000],
             files="\n\n".join(f"### {n}\n```python\n{c}\n```" for n, c in files.items()))
         try:
-            d = llm.chat_json("deep", REPAIR_SYSTEM, user, max_tokens=8000, want=("edits", "pin_bumps", "rationale"), tag="repair")
+            d = llm.chat_json("deep", REPAIR_SYSTEM, user, max_tokens=8000, want=("edits", "pin_bumps", "rationale"), tag="repair",
+                              temperature=0.0)
         except LLMError as e:
             res.notes.append(f"repair iteration {it} failed: {e}")
             break
