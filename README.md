@@ -111,7 +111,7 @@ The web app (`patchwise/web.py`) needs no setup from the person using it:
 - **Public GitHub repo:** paste `https://github.com/owner/name` for a triage-only run.
 
 Guards for a public deployment (all configurable via environment variables):
-- **Cost:** each run is capped at `PATCHWISE_WEB_MAX_COST` ($0.40). A daily budget (`PATCHWISE_DAILY_BUDGET`, $0.50 in the container) switches live runs off and leaves the replay available.
+- **Cost:** each run is capped at `PATCHWISE_WEB_MAX_COST` ($0.40). A daily budget (`PATCHWISE_DAILY_BUDGET`, $0.50 in the container) switches live runs off and leaves the replay available. On the deployment, the counters persist in Cloud Storage. If that storage is unreachable, live runs pause instead of running unlimited.
 - **Load:** one live run at a time (`PATCHWISE_MAX_CONCURRENT`), 3 runs per hour and 8 per day per IP, and a 10-minute wall-clock limit (the run is a killable subprocess).
 - **GitHub repos:** public only, at most 40 MB (checked during a monitored shallow clone), and **triage only**. Their tests are never executed on the server.
 - **Secrets:** API keys exist only in the server environment. Project code (installs, tests) runs with every

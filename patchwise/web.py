@@ -28,7 +28,7 @@ import tempfile
 import threading
 import time
 import uuid
-from collections import OrderedDict, defaultdict, deque
+from collections import OrderedDict
 from pathlib import Path
 
 import httpx
@@ -36,6 +36,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
+from . import state
 from .report import render_html
 
 PKG = Path(__file__).resolve().parent
@@ -62,57 +63,100 @@ app.mount("/assets", StaticFiles(directory=ASSETS), name="assets")
 
 # ----------------------------------------------------------------------------- guards
 class Guard:
-    def __init__(self):
+    """Live-run limits. The daily budget and per-IP history live in durable storage (Cloud Storage
+    on the deployment, see state.py) so they survive cold starts; the concurrency count is per
+    process (the service runs one instance). If storage is unreachable, live runs are refused."""
+
+    UNAVAILABLE = "Live runs are paused (usage counters unavailable); the instant replay shows a recorded live run."
+
+    def __init__(self, store=None):
         self.lock = threading.Lock()
         self.running = 0
-        self.hits: dict[str, deque] = defaultdict(deque)
-        self.state = WORK / "budget.json"
+        self.store = store or state.from_env(WORK)
+        self._cache: tuple[float, dict | None] = (0.0, None)
 
-    def _spent_today(self) -> float:
+    def snapshot(self, fresh: bool = False) -> dict | None:
+        """Current counters (cached ~5 s for status polling); None if storage is unreachable."""
+        t, d = self._cache
+        if not fresh and d is not None and time.time() - t < 5:
+            return d
         try:
-            d = json.loads(self.state.read_text())
-        except (OSError, ValueError):
-            return 0.0
-        return d.get("spent", 0.0) if d.get("day") == time.strftime("%Y-%m-%d") else 0.0
+            d = self.store.read()
+        except state.StateUnavailable:
+            d = None
+        self._cache = (time.time(), d)
+        return d
+
+    def _set(self, d: dict):
+        self._cache = (time.time(), d)
 
     def add_spend(self, usd: float):
-        with self.lock:
-            WORK.mkdir(parents=True, exist_ok=True)
-            self.state.write_text(json.dumps({"day": time.strftime("%Y-%m-%d"),
-                                              "spent": round(self._spent_today() + usd, 5)}))
+        if usd <= 0:
+            return
+        for _ in range(3):
+            try:
+                self._set(self.store.update(lambda d: {**d, "spent": round(d["spent"] + usd, 5)}))
+                return
+            except state.StateUnavailable:
+                time.sleep(1)
+        print(f"patchwise: could not record ${usd:.4f} of spend", flush=True)
 
-    def live_status(self) -> tuple[bool, str]:
+    def live_status(self, d: dict | None = None, fresh: bool = False) -> tuple[bool, str]:
         if not ENV("NEBIUS_API_KEY"):
             return False, "Live runs are not configured on this server; the instant replay shows a recorded live run."
-        if self._spent_today() >= DAILY_BUDGET:  # the per-run cap bounds any overshoot
+        d = d if d is not None else self.snapshot(fresh)
+        if d is None:
+            return False, self.UNAVAILABLE
+        if d["spent"] >= DAILY_BUDGET:  # the per-run cap bounds any overshoot
             return False, "Today's model budget for live runs is used up; the instant replay shows a recorded live run."
         return True, ""
 
-    def runs_left(self, ip: str) -> int:
+    @staticmethod
+    def _left(d: dict, ip: str) -> int:
         now = time.time()
-        q = self.hits[ip]
-        while q and now - q[0] > 86400:
-            q.popleft()
+        q = d["hits"].get(state.ip_key(ip), [])
         hour = sum(1 for t in q if now - t < 3600)
         return max(0, min(PER_HOUR - hour, PER_DAY - len(q)))
 
+    def runs_left(self, ip: str) -> int:
+        d = self.snapshot()
+        return self._left(d, ip) if d is not None else 0
+
     def acquire(self, ip: str):
-        ok, why = self.live_status()
-        if not ok:
-            raise HTTPException(503, why)
         with self.lock:
-            if self.runs_left(ip) <= 0:
-                raise HTTPException(429, "Rate limit reached for your address. Try the instant replay, or come back later.")
             if self.running >= MAX_CONCURRENT:
                 raise HTTPException(429, "Another live run is in progress. Watch the instant replay meanwhile, "
                                          "or try again in a minute.")
+            denied: list[HTTPException] = []
+
+            def take(d):
+                ok, why = self.live_status(d)
+                if not ok:
+                    denied.append(HTTPException(503, why))
+                    return d
+                if self._left(d, ip) <= 0:
+                    denied.append(HTTPException(429, "Rate limit reached for your address. "
+                                                     "Try the instant replay, or come back later."))
+                    return d
+                k = state.ip_key(ip)
+                return {**d, "hits": {**d["hits"], k: d["hits"].get(k, []) + [time.time()]}}
+
+            try:
+                d = self.store.update(take)
+            except state.StateUnavailable:
+                self._set(None)
+                raise HTTPException(503, self.UNAVAILABLE)
+            self._set(d)
+            if denied:
+                raise denied[0]
             self.running += 1
-            self.hits[ip].append(time.time())
 
     def refund(self, ip: str):
-        with self.lock:
-            if self.hits[ip]:
-                self.hits[ip].pop()
+        k = state.ip_key(ip)
+        try:
+            self._set(self.store.update(lambda d: {**d, "hits": {**d["hits"], k: d["hits"].get(k, [])[:-1]}}))
+        except state.StateUnavailable:
+            pass
 
     def release(self):
         with self.lock:
@@ -207,6 +251,8 @@ def run_cli(job: Job, target: Path, do_fix: bool, max_cost: float = MAX_COST, ti
     env = {k: v for k, v in os.environ.items() if k != "GITHUB_TOKEN"}  # the pipeline only needs model/search keys
     label = job.label if job.kind == "github" else f"demo/{target.name}"
     env.update(PYTHONUNBUFFERED="1", PATCHWISE_CLEAN_SANDBOX="1", PATCHWISE_REPO_LABEL=label)  # no server paths in reports
+    job.out.mkdir(parents=True, exist_ok=True)
+    env["PATCHWISE_SPEND_LOG"] = str(job.out / "spend.jsonl")  # exact spend even if the run is killed
     p = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
     timer = threading.Timer(timeout, p.kill)
     timer.start()
@@ -231,16 +277,29 @@ def _finish(job: Job):
         job.summary = summarize(data)
 
 
+def job_spend(job: Job) -> float:
+    total = 0.0
+    try:
+        for line in (job.out / "spend.jsonl").read_text().splitlines():
+            try:
+                total += float(json.loads(line).get("cost_usd", 0))
+            except (ValueError, AttributeError):
+                pass
+    except OSError:
+        if job.summary:
+            total = float(job.summary.get("cost") or 0)
+    return total
+
+
 def live_worker(job: Job, target: Path, do_fix: bool, cleanup: Path | None):
     try:
         run_cli(job, target, do_fix)
         _finish(job)
-        if job.summary:
-            GUARD.add_spend(job.summary["cost"] or 0)
     except Exception as e:  # surfaced to the UI without internals
         job.error = scrub(str(e))[:300]
         job.log(f"! {job.error}")
     finally:
+        GUARD.add_spend(job_spend(job))  # counted for failed and timed-out runs too
         GUARD.release()
         job.done = True
         if cleanup:
@@ -347,9 +406,13 @@ def healthz():
 
 @app.get("/api/config")
 def config(request: Request):
-    live, why = GUARD.live_status()
+    d = GUARD.snapshot()
+    live, why = GUARD.live_status(d)
     return {"live": live, "why": why, "replay": REPLAY.exists(), "max_cost": MAX_COST,
-            "runs_left": GUARD.runs_left(client_ip(request)), "busy": GUARD.running >= MAX_CONCURRENT,
+            "runs_left": GUARD._left(d, client_ip(request)) if d else 0, "busy": GUARD.running >= MAX_CONCURRENT,
+            "counters": GUARD.store.backend if d else "unavailable",
+            "spent_today": round(d["spent"], 4) if d else None, "daily_budget": DAILY_BUDGET,
+            "runs_today": sum(len(v) for v in d["hits"].values()) if d else None,
             "github_fix": ALLOW_FIX, "timeout": TIMEOUT, "max_repo_mb": MAX_REPO_MB}
 
 
@@ -378,7 +441,7 @@ async def start(request: Request):
         return {"id": job.id}
     ip = client_ip(request)
     if mode == "demo":
-        GUARD.acquire(ip)
+        await asyncio.to_thread(GUARD.acquire, ip)
         job = _register(Job("demo", "statuspage (live)"))
         tmp = Path(tempfile.mkdtemp(prefix="pw-demo-", dir=WORK))
         target = tmp / "statuspage"
@@ -389,13 +452,13 @@ async def start(request: Request):
         url = str(body.get("repo", ""))
         if not GH.match(url.strip()):
             raise HTTPException(400, "Enter a public repository URL like https://github.com/owner/name")
-        GUARD.acquire(ip)
+        await asyncio.to_thread(GUARD.acquire, ip)
         job = _register(Job("github", url.strip().removeprefix("https://github.com/")))
         try:
             target, tmp = await asyncio.to_thread(gh_target, url, job)
         except Exception:
             GUARD.release()
-            GUARD.refund(ip)
+            await asyncio.to_thread(GUARD.refund, ip)
             JOBS.pop(job.id, None)
             raise
         if not ALLOW_FIX:

@@ -13,16 +13,22 @@ printf '%s' "$NEBIUS_API_KEY" | gcloud secrets create nebius-api-key --data-file
 gcloud iam service-accounts create patchwise-run --project patchwise-demo
 gcloud secrets add-iam-policy-binding nebius-api-key --project patchwise-demo \
   --member=serviceAccount:patchwise-run@patchwise-demo.iam.gserviceaccount.com --role=roles/secretmanager.secretAccessor
+# durable usage counters (daily budget + per-IP history) in a private bucket; only the runtime SA can use it
+gcloud storage buckets create gs://patchwise-demo-state --project patchwise-demo --location us-east1 \
+  --uniform-bucket-level-access --public-access-prevention
+gcloud storage buckets add-iam-policy-binding gs://patchwise-demo-state \
+  --member=serviceAccount:patchwise-run@patchwise-demo.iam.gserviceaccount.com --role=roles/storage.objectUser
 gcloud run deploy patchwise --project patchwise-demo --region us-east1 --source . --allow-unauthenticated \
   --service-account patchwise-run@patchwise-demo.iam.gserviceaccount.com \
   --set-secrets NEBIUS_API_KEY=nebius-api-key:latest \
-  --set-env-vars PATCHWISE_CLIENT_IP=xff-last,PATCHWISE_WEB_MAX_COST=0.40,PATCHWISE_DAILY_BUDGET=0.50,PATCHWISE_MAX_CONCURRENT=1 \
+  --set-env-vars PATCHWISE_CLIENT_IP=xff-last,PATCHWISE_STATE_BUCKET=patchwise-demo-state,PATCHWISE_WEB_MAX_COST=0.40,PATCHWISE_DAILY_BUDGET=0.50,PATCHWISE_MAX_CONCURRENT=1 \
   --memory 2Gi --cpu 1 --no-cpu-throttling --execution-environment gen2 \
   --timeout 900 --min-instances 0 --max-instances 1 --concurrency 20
 ```
 - **Single instance:** `--max-instances 1` keeps the in-memory concurrency and rate-limit guards correct.
 - **Rate limits:** `PATCHWISE_CLIENT_IP=xff-last` keys them on the address Google's front end appends to `X-Forwarded-For`; earlier entries can be spoofed by clients.
 - **CPU:** `--no-cpu-throttling` keeps CPU allocated, so a live run (or the replay pacing) finishes even if the visitor closes the tab. It bills per instance-second while the instance is up, and the instance scales to zero about 15 minutes after the last request.
+- **Durable counters:** the daily model budget and per-IP run history live in one JSON object in `gs://patchwise-demo-state`, so they survive cold starts and new revisions. Writes use generation preconditions, IP addresses are stored only as salted hashes, and each run's exact spend (even for a killed run) comes from its own cost ledger. If the bucket is unreachable, live runs pause and the replay keeps working. `/api/config` shows `counters`, `spent_today` and `runs_today`.
 - **Health check:** use `/health`; Cloud Run's front end reserves `/healthz`.
 - **Budget:** a $10/month budget on this project alerts billing admins by email at 50%, 90%, 100% and 100% forecast. It notifies only; it doesn't cap spend.
 - **Expected cost:** ≈ $0–2/month. The instance-based free tier covers 240k vCPU-s and 450k GiB-s per month, about 65 hours of a warm 1 vCPU / 2 GiB instance. Artifact Registry storage costs a few cents. If bots kept it warm 24/7, the worst case is ≈ $50/month, and the budget alert would fire well before that.
@@ -71,5 +77,4 @@ The worst-case model spend is the daily budget × days. The deploy default is $0
 the demo were maxed out every single day, so the prepaid Token Factory balance is the real hard stop. The replay keeps working after the
 budget (or the credit) is used up. Raise the budget for the judging window (Dec 1–15) if credit allows.
 
-Budget and rate-limit counters live under `PATCHWISE_WORK_DIR` (default `/tmp/patchwise-web`), which resets when the machine restarts.
-For durable counters, attach a 1 GB Fly volume (≈ $0.15/mo) and point `PATCHWISE_WORK_DIR` at it.
+Without `PATCHWISE_STATE_BUCKET`, the counters live in a JSON file under `PATCHWISE_WORK_DIR` (default `/tmp/patchwise-web`). On Fly.io, put that on a volume to make it durable.
