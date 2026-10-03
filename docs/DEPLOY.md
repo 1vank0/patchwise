@@ -33,10 +33,11 @@ fly scale count 1                                  # single instance (in-memory 
 Smoke test: `/healthz`, the instant replay, one live demo run (≈ $0.04), and a GitHub triage of a small repo.
 
 ## Guard defaults (environment variables)
-`PATCHWISE_WEB_MAX_COST=0.40` (per run) · `PATCHWISE_DAILY_BUDGET=3.00` · `PATCHWISE_MAX_CONCURRENT=1` ·
+`PATCHWISE_WEB_MAX_COST=0.40` (per run) · `PATCHWISE_DAILY_BUDGET=0.50` · `PATCHWISE_MAX_CONCURRENT=1` ·
 `PATCHWISE_RUNS_PER_IP_HOUR=3` · `PATCHWISE_RUNS_PER_IP_DAY=8` · `PATCHWISE_RUN_TIMEOUT=600` · `PATCHWISE_MAX_REPO_MB=40` ·
 `PATCHWISE_ALLOW_FIX=0` (GitHub repos are triage only). Optional `GITHUB_TOKEN` raises the GitHub API limit for the size check; it is
 never passed to the pipeline or to project code.
 
-The worst-case model spend is the daily budget × days. At $3/day that is ≈ $220 through Dec 15 if the demo were hammered every
-day; lower `PATCHWISE_DAILY_BUDGET` (for example to 0.50) to bound it tightly. The replay keeps working after the budget is spent.
+The worst-case model spend is the daily budget × days. The deploy default is $0.50/day, roughly 11 live demo runs a day. That is ≈ $35 through Dec 15 only if
+the demo were maxed out every single day, so the prepaid Token Factory balance is the real hard stop. The replay keeps working after the
+budget (or the credit) is used up. Raise the budget for the judging window (Dec 1–15) if credit allows.

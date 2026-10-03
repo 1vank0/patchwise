@@ -10,7 +10,7 @@ primary_region = "ams"            # near Nebius Token Factory (EU); any region w
 [env]
   PORT = "8080"
   PATCHWISE_WEB_MAX_COST = "0.40"
-  PATCHWISE_DAILY_BUDGET = "3.00"
+  PATCHWISE_DAILY_BUDGET = "0.50"
   PATCHWISE_MAX_CONCURRENT = "1"
 
 [http_service]
