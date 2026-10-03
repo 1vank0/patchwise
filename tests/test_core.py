@@ -211,3 +211,9 @@ def test_fuzzy_edit_fixes_model_indentation(tmp_path):
     assert (tmp_path / "w" / "w.py").read_text().endswith("\n\ndef get_locale():\n    return 'en'\n")
     # an edit that would leave the module unparsable is not applied
     assert sb.apply_edits([{"file": "w.py", "search": "    return 'en'", "replace": "  return ("}]) == []
+
+
+def test_min_fix_never_picks_a_prerelease():
+    f = Finding(Dependency("sqlalchemy", "1.1.11", "PyPI", "requirements.txt"),
+                [v("A", fixed=("1.2.18", "1.3.0b3")), v("B", fixed=("1.3.0b3",))])
+    assert f.min_fix == "1.3.0"

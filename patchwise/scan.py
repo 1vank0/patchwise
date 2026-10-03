@@ -54,6 +54,8 @@ class Finding:
                     fv = Version(f)
                 except InvalidVersion:
                     continue
+                if fv.is_prerelease or fv.is_devrelease:  # never pin a beta: use its final release
+                    fv = Version(fv.base_version)
                 if fv > cur:
                     cands.append(fv)
             if cands:

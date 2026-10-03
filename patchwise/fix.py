@@ -717,6 +717,12 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
             if not bumps and not raised and not getattr(sb, "dropped_extras", None):
                 if err:
                     res.notes.append("Resolver could not find a compatible set: " + err[-500:])
+                    pyreq = re.findall(r"([A-Za-z0-9_.\-]+)==([^\s]+) depends on Python>=([\d.]+)", err)
+                    if pyreq:
+                        need = max(pyreq, key=lambda t: tuple(int(x) for x in t[2].split(".")))
+                        res.notes.append(f"The security fixes need a newer Python: {need[0]} {need[1]} requires "
+                                         f"Python >= {need[2]}, but the project targets "
+                                         f"{sb.python_version() or 'an older Python'}. Upgrade Python first.")
                 break
             if bumps:
                 log(f"  resolver: compatible bumps needed: {', '.join(f'{k}->{v}' for k, v in bumps.items())}")
