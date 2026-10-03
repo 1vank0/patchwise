@@ -1,4 +1,33 @@
-# Deploying the Patchwise web demo (prepared, not yet deployed)
+# Deploying the Patchwise web demo
+
+**Live:** https://patchwise-787826567365.us-east1.run.app: Google Cloud Run, project `patchwise-demo`, region `us-east1`, service `patchwise`.
+
+## Cloud Run (current deployment)
+```bash
+gcloud projects create patchwise-demo
+gcloud billing projects link patchwise-demo --billing-account=<ACCOUNT>
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com \
+  secretmanager.googleapis.com --project patchwise-demo
+# the key goes in via stdin, never echoed
+printf '%s' "$NEBIUS_API_KEY" | gcloud secrets create nebius-api-key --data-file=- --project patchwise-demo
+gcloud iam service-accounts create patchwise-run --project patchwise-demo
+gcloud secrets add-iam-policy-binding nebius-api-key --project patchwise-demo \
+  --member=serviceAccount:patchwise-run@patchwise-demo.iam.gserviceaccount.com --role=roles/secretmanager.secretAccessor
+gcloud run deploy patchwise --project patchwise-demo --region us-east1 --source . --allow-unauthenticated \
+  --service-account patchwise-run@patchwise-demo.iam.gserviceaccount.com \
+  --set-secrets NEBIUS_API_KEY=nebius-api-key:latest \
+  --set-env-vars PATCHWISE_CLIENT_IP=xff-last,PATCHWISE_WEB_MAX_COST=0.40,PATCHWISE_DAILY_BUDGET=0.50,PATCHWISE_MAX_CONCURRENT=1 \
+  --memory 2Gi --cpu 1 --no-cpu-throttling --execution-environment gen2 \
+  --timeout 900 --min-instances 0 --max-instances 1 --concurrency 20
+```
+- **Single instance:** `--max-instances 1` keeps the in-memory concurrency and rate-limit guards correct.
+- **Rate limits:** `PATCHWISE_CLIENT_IP=xff-last` keys them on the address Google's front end appends to `X-Forwarded-For`; earlier entries can be spoofed by clients.
+- **CPU:** `--no-cpu-throttling` keeps CPU allocated, so a live run (or the replay pacing) finishes even if the visitor closes the tab. It bills per instance-second while the instance is up, and the instance scales to zero about 15 minutes after the last request.
+- **Health check:** use `/health`; Cloud Run's front end reserves `/healthz`.
+- **Budget:** a $10/month budget on this project alerts billing admins by email at 50%, 90%, 100% and 100% forecast. It notifies only; it doesn't cap spend.
+- **Expected cost:** ≈ $0–2/month. The instance-based free tier covers 240k vCPU-s and 450k GiB-s per month, about 65 hours of a warm 1 vCPU / 2 GiB instance. Artifact Registry storage costs a few cents. If bots kept it warm 24/7, the worst case is ≈ $50/month, and the budget alert would fire well before that.
+- **Model spend:** capped separately by the in-app daily budget.
+
 
 Requirements: the demo must stay up and be free for judges **through Dec 15, 2026** (judging is Dec 1–15). The container
 needs `git`, `uv`, a Python 3.11 toolchain for sandboxed test runs of the demo project, outbound HTTPS (Token Factory,
@@ -20,7 +49,7 @@ Tavily, OSV.dev, PyPI), and about 1 GB of RAM. Jobs, rate limits and the concurr
 demo (sandboxed upgrade, tests and repair) responsive, and it builds the existing Dockerfile remotely, so no local Docker is needed.
 Cloud Run is the $0 alternative if a GCP billing account already exists. The Nebius endpoint would cost ≈ $100 for 24/7.
 
-## Steps (Fly.io), after approval
+## Steps (Fly.io alternative)
 ```bash
 curl -L https://fly.io/install.sh | sh            # installs flyctl
 fly auth login                                     # browser sign-in (Ivan)
@@ -30,7 +59,7 @@ fly secrets set TAVILY_API_KEY=...                 # recommended for public traf
 fly deploy                                         # remote build of ./Dockerfile
 fly scale count 1                                  # single instance (in-memory guards)
 ```
-Smoke test: `/healthz`, the instant replay, one live demo run (≈ $0.04), and a GitHub triage of a small repo.
+Smoke test: `/health`, the instant replay, one live demo run (≈ $0.04), and a GitHub triage of a small repo.
 
 ## Guard defaults (environment variables)
 `PATCHWISE_WEB_MAX_COST=0.40` (per run) · `PATCHWISE_DAILY_BUDGET=0.50` · `PATCHWISE_MAX_CONCURRENT=1` ·

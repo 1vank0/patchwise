@@ -10,6 +10,8 @@ breaking changes already repaired.**
 Built for the Nebius × NVIDIA hackathon (Coding & Agentic track) on
 **NVIDIA Nemotron** models served by **Nebius Token Factory**, with live advisory research by **Tavily**.
 
+**Live demo:** [https://patchwise-787826567365.us-east1.run.app](https://patchwise-787826567365.us-east1.run.app): one click, no sign-up. The first visit may take a few seconds while the instance starts.
+
 ![Patchwise web demo](docs/img/landing.png)
 
 ## Built with NVIDIA Nemotron on Nebius Token Factory
@@ -99,6 +101,8 @@ Other settings come from environment variables: `PATCHWISE_MAX_REPAIRS` (default
 `PATCHWISE_SPEND_LOG` (path to a JSONL cost ledger).
 
 ## Web demo
+**Try it live: [https://patchwise-787826567365.us-east1.run.app](https://patchwise-787826567365.us-east1.run.app)** (Google Cloud Run, us-east1).
+
 The web app (`patchwise/web.py`) needs no setup from the person using it:
 - **Run live on the demo project:** one click runs the full pipeline on `demo/statuspage`. It streams the agent log, then shows
   a before/after summary card and the full report.
@@ -129,8 +133,9 @@ costs and a hand spot-check of the verdicts, including known failure modes.
 - The OpenVEX output is marked "automated; review before publishing".
 
 ## Deploy
-`Dockerfile` builds the web demo for any container host. `fly.toml` is a prepared Fly.io config. Inject
-`NEBIUS_API_KEY` (and optionally `TAVILY_API_KEY`) as secrets; never bake them into the image.
+The live demo runs on **Google Cloud Run**, built from this repo's `Dockerfile` with `gcloud run deploy --source .`. The Nebius key
+lives in Secret Manager and is mounted as an env var. See [docs/DEPLOY.md](docs/DEPLOY.md) for the exact commands. `fly.toml` is an
+alternative Fly.io config. Inject `NEBIUS_API_KEY` (and optionally `TAVILY_API_KEY`) as secrets; never bake them into the image.
 
 ## License
 Apache License 2.0. See [LICENSE](LICENSE).
