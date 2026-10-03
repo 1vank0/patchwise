@@ -1,0 +1,36 @@
+# Fly.io config for the Patchwise demo (prepared, not deployed). Deploy: fly launch --copy-config --no-deploy
+# then: fly secrets set NEBIUS_API_KEY=... && fly deploy && fly scale count 1
+# (one machine only: jobs, rate limits and the concurrency guard live in process memory)
+app = "patchwise-demo"            # change if the name is taken
+primary_region = "ams"            # near Nebius Token Factory (EU); any region works
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  PATCHWISE_WEB_MAX_COST = "0.40"
+  PATCHWISE_DAILY_BUDGET = "3.00"
+  PATCHWISE_MAX_CONCURRENT = "1"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"     # scale to zero when idle; wakes in a few seconds on the next request
+  auto_start_machines = true
+  min_machines_running = 0
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 50
+    hard_limit = 100
+
+[[http_service.checks]]
+  grace_period = "20s"
+  interval = "30s"
+  method = "GET"
+  path = "/healthz"
+  timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"

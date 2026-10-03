@@ -21,6 +21,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["patchwise"]
 
+[tool.setuptools.package-data]
+patchwise = ["assets/*", "replay/*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = ["slow: runs uv installs + the demo test suite"]
