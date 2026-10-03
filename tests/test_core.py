@@ -106,3 +106,106 @@ def test_repair_loop_end_to_end(tmp_path):
     assert res.status == "verified_with_code_changes", (res.final.summary, res.final.output[-800:])
     assert res.compat_bumps.get("markupsafe")
     assert "pass_context" in res.diff and "jinja2==3.1.6" in res.diff
+
+
+def test_repair_cannot_introduce_security_regressions(tmp_path):
+    repo = tmp_path / "r"
+    repo.mkdir()
+    (repo / "c.py").write_text("import yaml\nx = yaml.load(raw, Loader=yaml.FullLoader)\nr = get(u)\n")
+    sb = Sandbox(repo, tmp_path / "w", Settings(offline=True))
+    rejected = []
+    changed = sb.apply_edits([
+        {"file": "c.py", "search": "yaml.load(raw, Loader=yaml.FullLoader)", "replace": "yaml.unsafe_load(raw)"},
+        {"file": "c.py", "search": "get(u)", "replace": "get(u, verify=False)"},
+    ], rejected)
+    assert changed == [] and {p for r in rejected for p in r["patterns"]} == {
+        "yaml unsafe loader", "TLS verification disabled"}
+    # safe edits still apply, and pre-existing patterns may be kept
+    assert sb.apply_edits([{"file": "c.py", "search": "x = yaml.load(raw, Loader=yaml.FullLoader)",
+                            "replace": "x = yaml.safe_load(raw)"}]) == ["c.py"]
+
+
+def test_parse_json_tolerates_reasoning_and_sloppy_json():
+    leaked = ('Here\'s a thinking process: the user wants {verdict}. I think it\'s reachable.\n'
+              '{"verdict": "reachable", "cited": ["a.py:3"],}')
+    assert parse_json(leaked, ("verdict",))["verdict"] == "reachable"
+    assert parse_json("</think>{'verdict': 'uncertain', 'ok': True}")["ok"] is True
+    nested = 'x {"rationale": "r", "edits": [{"file": "a.py", "search": "{", "replace": "}"}]} y'
+    assert parse_json(nested, ("edits",))["edits"][0]["search"] == "{"
+    with pytest.raises(Exception):
+        parse_json("no json here")
+
+
+def test_llm_retries_rate_limits_then_fails_fast_on_4xx(monkeypatch):
+    import httpx
+    import openai
+
+    s = Settings(nebius_api_key="test-key", offline=False, llm_retries=3)
+    llm = LLM(s)
+    llm._sleep = lambda *_: None
+    req = httpx.Request("POST", "https://x/v1/chat/completions")
+
+    class Resp:
+        class usage:
+            prompt_tokens, completion_tokens = 10, 5
+
+        def __init__(self, content, finish="stop"):
+            msg = type("M", (), {"content": content, "model_extra": {}})()
+            self.choices = [type("C", (), {"message": msg, "finish_reason": finish})()]
+
+    calls = []
+
+    def flaky(model, messages, max_tokens, temperature, thinking):
+        calls.append((max_tokens, thinking))
+        if len(calls) == 1:
+            raise openai.RateLimitError("slow down", response=httpx.Response(429, request=req), body=None)
+        if len(calls) == 2:
+            raise openai.APITimeoutError(request=req)
+        if len(calls) == 3:
+            return Resp("Let me think about this carefully", finish="length")  # truncated reasoning
+        return Resp('{"verdict": "reachable"}')
+
+    monkeypatch.setattr(llm, "_create", flaky)
+    assert llm.chat_json("reason", "s", "u", max_tokens=100, want=("verdict",)) == {"verdict": "reachable"}
+    # rate limit + timeout are retried; truncated reasoning is retried once with thinking off
+    assert calls == [(100, True), (100, True), (100, True), (100, False)] and llm.usage.retries == 3
+
+    def bad(*a, **k):
+        calls.append("bad")
+        raise openai.BadRequestError("nope", response=httpx.Response(400, request=req), body=None)
+
+    calls.clear()
+    monkeypatch.setattr(llm, "_create", bad)
+    with pytest.raises(Exception, match="BadRequestError"):
+        llm.chat("fast", "s", "u")
+    assert calls == ["bad"]
+
+
+def test_test_summary_parses_pytest_and_unittest():
+    from patchwise.fix import _summ
+    assert _summ("..\n==== 3 passed, 2 warnings in 0.1s ====\n") == "3 passed, 2 warnings in 0.1s"
+    assert _summ("....\n----\nRan 161 tests in 1.308s\n\nOK\n") == "161 tests in 1.308s: OK"
+    assert _summ("F.\nRan 2 tests in 0.1s\n\nFAILED (failures=1)\n").endswith("FAILED (failures=1)")
+
+
+def test_template_filters_are_indexed_as_evidence(tmp_path):
+    (tmp_path / "app.py").write_text("import jinja2\n")
+    (tmp_path / "templates").mkdir()
+    (tmp_path / "templates" / "page.html").write_text("<p>{{ name|e }}</p>\n<div {{ attrs|xmlattr }}></div>\n")
+    idx = PyIndex.build(tmp_path)
+    f = Finding(Dependency("jinja2", "3.1.2", "PyPI", "requirements.txt"), [v("GHSA-h5c8-rqwp-cp95")])
+    ev = gather(idx, f, Intel("GHSA-h5c8-rqwp-cp95", vulnerable_symbols=["jinja2.filters.do_xmlattr", "xmlattr"]))
+    assert [(e.file, e.line, e.kind) for e in ev if e.kind == "template"] == [("templates/page.html", 2, "template")]
+
+
+def test_fuzzy_edit_fixes_model_indentation(tmp_path):
+    repo = tmp_path / "r"
+    repo.mkdir()
+    (repo / "w.py").write_text("babel = Babel(app)\n\n\n@babel.localeselector\ndef get_locale():\n    return 'en'\n")
+    sb = Sandbox(repo, tmp_path / "w", Settings(offline=True))
+    edit = {"file": "w.py", "search": "@babel.localeselector\n    def get_locale():",
+            "replace": "def get_locale():"}
+    assert sb.apply_edits([edit]) == ["w.py"]
+    assert (tmp_path / "w" / "w.py").read_text().endswith("\n\ndef get_locale():\n    return 'en'\n")
+    # an edit that would leave the module unparsable is not applied
+    assert sb.apply_edits([{"file": "w.py", "search": "    return 'en'", "replace": "  return ("}]) == []

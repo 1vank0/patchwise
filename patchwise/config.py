@@ -39,6 +39,15 @@ class Settings:
     offline: bool = field(default_factory=lambda: os.environ.get("PATCHWISE_OFFLINE", "0") == "1")
     max_repair_iterations: int = int(os.environ.get("PATCHWISE_MAX_REPAIRS", "3"))
     test_command: str | None = os.environ.get("PATCHWISE_TEST_CMD")
+    test_timeout: int = int(os.environ.get("PATCHWISE_TEST_TIMEOUT", "900"))
+    python_version: str | None = os.environ.get("PATCHWISE_PYTHON")
+    # Requirements files to install for the test run (default: every requirements file found).
+    install_requirements: list = field(default_factory=list)
+    extra_test_packages: list = field(default_factory=list)
+    # Hard ceiling on model spend per run (USD); calls stop once it is reached.
+    max_cost_usd: float = float(os.environ.get("PATCHWISE_MAX_COST", "1.00"))
+    llm_timeout: float = float(os.environ.get("PATCHWISE_LLM_TIMEOUT", "180"))
+    llm_retries: int = int(os.environ.get("PATCHWISE_LLM_RETRIES", "4"))
 
     @property
     def llm_available(self) -> bool:
