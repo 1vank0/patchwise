@@ -136,6 +136,8 @@ def test_parse_json_tolerates_reasoning_and_sloppy_json():
     assert parse_json(nested, ("edits",))["edits"][0]["search"] == "{"
     with pytest.raises(Exception):
         parse_json("no json here")
+    with pytest.raises(Exception):  # a lone inner fragment is not the requested answer
+        parse_json('{"file": "a.py", "search": "x", "replace": "y"}', ("edits", "pin_bumps"))
 
 
 def test_llm_retries_rate_limits_then_fails_fast_on_4xx(monkeypatch):

@@ -144,6 +144,8 @@ def parse_json(text: str, want: tuple[str, ...] = ()) -> dict:
         good = [c for c in cands if any(k in c for k in want)]
         if good:
             return good[-1]
+        # an inner fragment (e.g. one edit object) is not the answer; let the caller repair it
+        raise LLMError(f"no JSON object with keys {want}: {text[:200]!r}")
     # outermost objects come out of _balanced_objects first; prefer the last *largest*
     return max(reversed(cands), key=lambda c: len(json.dumps(c)))
 
@@ -241,7 +243,7 @@ class LLM:
             extra = getattr(msg, "model_extra", None) or {}
             reasoning = extra.get("reasoning_content") or extra.get("reasoning") or ""
             stripped = _strip_reasoning(content)
-            if choice.finish_reason == "length" and not grown and "{" not in stripped:
+            if choice.finish_reason == "length" and not grown:
                 # reasoning ate the budget before the answer. Doubling the budget invites a
                 # runaway (seen live: 12k then 24k tokens of thought, no answer), so retry once
                 # with thinking off; if thinking was already off, retry once with more room.
@@ -265,6 +267,9 @@ class LLM:
             return parse_json(text, want)
         except LLMError:
             # one repair attempt on the cheap model
-            fixed = self.chat("fast", "Convert the following into one valid JSON object. Output JSON only.",
-                              text[-8000:], max_tokens=3000, thinking=False, tag="json-repair")
+            shape = f" It must contain the keys: {', '.join(want)}." if want else ""
+            fixed = self.chat("fast", "Convert the following into one valid JSON object, keeping all "
+                              "content (escape quotes, backslashes and newlines inside strings). Output "
+                              "JSON only." + shape, text[:24000],
+                              max_tokens=min(16000, max(3000, len(text) // 2)), thinking=False, tag="json-repair")
             return parse_json(fixed, want)
