@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import re
 from collections import defaultdict
+from functools import lru_cache
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -39,6 +40,7 @@ class Reachability:
     rationale: str
     evidence: list[Evidence] = field(default_factory=list)
     method: str = "llm"
+    cited: list[str] = field(default_factory=list)
 
     def to_dict(self):
         d = asdict(self)
@@ -55,17 +57,40 @@ class PyIndex:
     imports: dict = field(default_factory=lambda: defaultdict(list))  # top module -> [(file, line, alias, full)]
     calls: list = field(default_factory=list)  # (file, line, dotted_name)
     sources: dict = field(default_factory=dict)
+    templates: dict = field(default_factory=dict)  # template file -> lines
+    filters: dict = field(default_factory=lambda: defaultdict(list))  # jinja filter -> [(file, line)]
 
     @classmethod
     def build(cls, root: Path) -> "PyIndex":
+        import warnings
         idx = cls(root)
+        tmpl_re = re.compile(r"\|\s*([A-Za-z_]\w*)")
+        for p in root.rglob("*"):
+            if p.suffix not in (".html", ".htm", ".j2", ".jinja", ".jinja2", ".xml", ".txt") or not p.is_file():
+                continue
+            rel = p.relative_to(root)
+            if any(part in SKIP for part in rel.parts) or p.stat().st_size > 300_000:
+                continue
+            try:
+                lines = p.read_text(errors="ignore").splitlines()
+            except OSError:
+                continue
+            if not any("{{" in ln or "{%" in ln for ln in lines[:400]):
+                continue
+            idx.templates[str(rel)] = lines
+            for i, ln in enumerate(lines, 1):
+                for expr in re.findall(r"\{\{.*?\}\}|\{%.*?%\}", ln):
+                    for name in tmpl_re.findall(expr):
+                        idx.filters[name].append((str(rel), i))
         for p in root.rglob("*.py"):
             rel = p.relative_to(root)
             if any(part in SKIP for part in rel.parts):
                 continue
             try:
                 src = p.read_text(errors="ignore")
-                tree = ast.parse(src)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    tree = ast.parse(src)
             except (SyntaxError, ValueError):
                 continue
             idx.sources[str(rel)] = src.splitlines()
@@ -85,7 +110,7 @@ class PyIndex:
         return idx
 
     def snippet(self, file: str, line: int, ctx: int = 2) -> str:
-        lines = self.sources.get(file, [])
+        lines = self.sources.get(file) or self.templates.get(file, [])
         lo, hi = max(0, line - 1 - ctx), min(len(lines), line + ctx)
         return "\n".join(f"{i + 1:>4}| {lines[i]}" for i in range(lo, hi))
 
@@ -105,34 +130,132 @@ def _dotted(node) -> str | None:
     return None
 
 
-def gather(idx: PyIndex, f: Finding, intel: Intel) -> list[Evidence]:
+# Method names too generic to count as evidence on their own (dict.get, bytes.decode, …).
+GENERIC = {"get", "post", "put", "delete", "request", "decode", "encode", "read", "write", "open",
+           "close", "load", "loads", "dump", "dumps", "parse", "run", "call", "send", "update",
+           "format", "join", "split", "copy", "keys", "items", "values", "append", "init", "new"}
+
+
+@lru_cache(maxsize=1024)
+def requires(dist: str, version: str | None, extras: bool = False) -> frozenset:
+    """Normalized names of the requirements of dist==version (latest if None) from PyPI
+    metadata; with extras=True, optional (extra-gated) requirements are included."""
+    import httpx
+    from packaging.requirements import InvalidRequirement, Requirement
+    url = f"https://pypi.org/pypi/{dist}/{version}/json" if version else f"https://pypi.org/pypi/{dist}/json"
+    try:
+        info = httpx.get(url, timeout=20).json()["info"]
+    except Exception:
+        return frozenset()
+    out = set()
+    for spec in info.get("requires_dist") or []:
+        try:
+            r = Requirement(spec)
+        except InvalidRequirement:
+            continue
+        if r.marker and "extra" in str(r.marker) and not extras:
+            continue
+        out.add(re.sub(r"[-_.]+", "-", r.name).lower())
+    return frozenset(out)
+
+
+def wrappers_for(idx: "PyIndex", f: Finding, deps: list) -> list[str]:
+    """Directly-imported pinned deps through which f's package is used, up to two levels deep,
+    including optional extras (requests -> urllib3; requests -> urllib3 -> brotli, which
+    urllib3 uses automatically whenever it is installed). Returns chains like
+    'requests', 'requests > urllib3 (optional extra)'."""
+    if any(idx.imports.get(m.split(".")[0]) for m in module_names(f.dep.name)):
+        return []
+    pinned = {d.name: d.version for d in deps if d.ecosystem == "PyPI"}
+    out = []
+    for d in deps:
+        if d.name == f.dep.name or d.ecosystem != "PyPI":
+            continue
+        if not any(idx.imports.get(m.split(".")[0]) for m in module_names(d.name)):
+            continue
+        direct = requires(d.name, d.version)
+        if f.dep.name in direct:
+            out.append(d.name)
+            continue
+        if f.dep.name in requires(d.name, d.version, True):
+            out.append(f"{d.name} (optional extra)")
+            continue
+        for mid in sorted(direct):
+            if f.dep.name in requires(mid, pinned.get(mid), True):
+                opt = "" if f.dep.name in requires(mid, pinned.get(mid)) else " (optional extra)"
+                out.append(f"{d.name} > {mid}{opt}")
+                break
+    return out[:6]
+
+
+def gather(idx: PyIndex, f: Finding, intel: Intel, wrappers: list[str] | None = None) -> list[Evidence]:
     ev: list[Evidence] = []
-    mods = module_names(f.dep.name)
     aliases = set()
-    for m in mods:
-        for file, line, alias, full in idx.imports.get(m.split(".")[0], []):
-            aliases.add(alias)
-            ev.append(Evidence(file, line, idx.snippet(file, line, 0), "import"))
+    for kind, dists in (("import", [f.dep.name]), ("import-via", [w.split(" ")[0] for w in wrappers or []])):
+        for dist in dists:
+            for m in module_names(dist):
+                for file, line, alias, full in idx.imports.get(m.split(".")[0], []):
+                    aliases.add(alias)
+                    ev.append(Evidence(file, line, idx.snippet(file, line, 0), kind))
     tails = {s.rstrip("()").split(".")[-1] for s in intel.vulnerable_symbols if s != "*"}
-    tails = {t for t in tails if re.match(r"^[A-Za-z_]\w+$", t)}
+    tails = {t for t in tails if re.match(r"^[A-Za-z_]\w+$", t) and t.lower() not in GENERIC}
+    seen = set()
     for file, line, name in idx.calls:
         base = name.split("[")[0]
         head, last = base.split(".")[0], base.split(".")[-1]
-        if head in aliases or last in tails:
+        if (head in aliases or last in tails) and (file, line) not in seen:
+            seen.add((file, line))
             ev.append(Evidence(file, line, idx.snippet(file, line), "call"))
+    for t in tails:  # Jinja filters named by the advisory (xmlattr, urlize, attr, …)
+        for file, line in idx.filters.get(t, [])[:5]:
+            ev.append(Evidence(file, line, idx.snippet(file, line, 0), "template"))
     return ev[:40]
+
+
+def template_summary(idx: PyIndex) -> str:
+    if not idx.templates:
+        return "no Jinja templates found"
+    names = sorted(idx.filters, key=lambda n: -len(idx.filters[n]))
+    return (f"{len(idx.templates)} Jinja templates; filters used in them: "
+            + (", ".join(names[:60]) or "none"))
+
+
+def context_sources(idx: PyIndex, ev: list[Evidence], budget: int = 9000) -> str:
+    """Full (numbered) source of the files that hold evidence, smallest first, within budget.
+    Lets the model see things a call site alone hides: where arguments come from, constants
+    such as a hard-coded secret, wrappers around the call."""
+    files = sorted({e.file for e in ev if e.file in idx.sources}, key=lambda f: len(idx.sources.get(f, [])))
+    out, used = [], 0
+    for f in files:
+        lines = idx.sources.get(f, [])
+        if len(lines) > 400:
+            continue
+        body = "\n".join(f"{i + 1:>4}| {t}" for i, t in enumerate(lines))
+        if used + len(body) > budget:
+            continue
+        out.append(f"### {f}\n{body}")
+        used += len(body)
+    return "\n\n".join(out)
 
 
 SYSTEM = """You are a senior application-security engineer doing reachability analysis.
 Decide whether the given codebase can actually trigger a known vulnerability in one of its
 dependencies. Use ONLY the evidence given. Rules:
 - reachable: there is a concrete code path that uses the vulnerable symbol/feature in the
-  vulnerable way (cite file:line), or the flaw triggers on any normal use and the package
-  is used (directly, or clearly indirectly via a package that wraps it).
-- not_reachable: the vulnerable symbol/feature is never used, or only used in a safe way
-  (e.g. yaml.safe_load), or the package is not imported and no imported package wraps it.
-- uncertain: evidence is insufficient (dynamic dispatch, indirect use you cannot rule out).
-Prefer 'uncertain' over guessing. Keep rationale under 80 words."""
+  vulnerable way (cite the exact file:line of that call), or the flaw triggers on any normal
+  use and the package is used (directly, or indirectly through an imported package that
+  wraps it, e.g. requests -> urllib3; then cite the wrapper's call site).
+- not_reachable: the vulnerable symbol/feature/option is never used, or only used in a safe
+  way (e.g. yaml.safe_load; jwt.decode with an explicit algorithms list that rules out the
+  confused algorithm), or the package is neither imported nor wrapped by an imported package.
+- uncertain: evidence is genuinely insufficient (dynamic dispatch, config you cannot see).
+Judge the code as written: a precondition you can see is absent (no proxy configured, no
+sandbox used, no such filter in any template) means not_reachable, not uncertain. Consider
+where inputs come from (module docstrings and comments describe data sources).
+For indirect use, reason about how the wrapper calls the vulnerable package internally, not
+only the arguments visible at the call site (e.g. requests always reads response bodies
+through urllib3's streaming API and follows redirects by default, even without stream=True).
+Cite only file:line locations that appear in the evidence or sources. Rationale under 80 words."""
 
 USER_TMPL = """Vulnerability {vid} in {pkg} {ver}
 Vulnerable symbols/features: {syms}
@@ -140,16 +263,21 @@ Trigger conditions: {trig}
 Attack vector: {vector}
 
 Third-party modules imported by the codebase: {imports}
+How {pkg} is reached when not imported directly (pinned deps that depend on it): {wrappers}
+Templates: {templates}
 
-Static evidence (imports and candidate call sites):
+Static evidence (imports, imports of packages that wrap {pkg}, candidate call sites):
 {evidence}
+
+Full source of the files above:
+{sources}
 
 Return JSON: {{"verdict": "reachable"|"not_reachable"|"uncertain", "confidence": 0.0-1.0,
  "rationale": str, "cited": ["file:line", ...]}}"""
 
 
 def heuristic(idx: PyIndex, f: Finding, intel: Intel, ev: list[Evidence]) -> Reachability:
-    imports = [e for e in ev if e.kind == "import"]
+    imports = [e for e in ev if e.kind in ("import", "import-via")]
     calls = [e for e in ev if e.kind == "call"]
     if not imports:
         return Reachability(intel.vuln_id, "uncertain" if f.dep.ecosystem == "npm" else "not_reachable",
@@ -165,26 +293,49 @@ def heuristic(idx: PyIndex, f: Finding, intel: Intel, ev: list[Evidence]) -> Rea
                         "site matches the vulnerable symbols.", ev, "heuristic")
 
 
-def analyze(idx: PyIndex, f: Finding, intel: Intel, llm: LLM) -> Reachability:
-    ev = gather(idx, f, intel)
+def analyze(idx: PyIndex, f: Finding, intel: Intel, llm: LLM, deps: list | None = None) -> Reachability:
+    wrappers = wrappers_for(idx, f, deps or [])
+    ev = gather(idx, f, intel, wrappers)
     if not llm.online:
         return heuristic(idx, f, intel, ev)
     evtext = "\n".join(f"[{e.kind}] {e.file}:{e.line}\n{e.snippet}" for e in ev) or "(none found)"
     user = USER_TMPL.format(vid=intel.vuln_id, pkg=f.dep.name, ver=f.dep.version,
                             syms=", ".join(intel.vulnerable_symbols), trig=intel.trigger_conditions[:800],
                             vector=intel.attack_vector[:300], imports=", ".join(idx.third_party_imports()[:60]),
-                            evidence=evtext[:10000])
+                            wrappers=", ".join(wrappers) or ("imported directly" if any(
+                                e.kind == "import" for e in ev) else "no pinned dependency wraps it"),
+                            templates=template_summary(idx),
+                            evidence=evtext[:8000], sources=context_sources(idx, ev) or "(none)")
     try:
-        d = llm.chat_json("reason", SYSTEM, user, max_tokens=1500)
+        d = llm.chat_json("reason", SYSTEM, user, max_tokens=6000, want=("verdict",), tag="reach",
+                         temperature=0.0)
     except LLMError:
         return heuristic(idx, f, intel, ev)
     verdict = d.get("verdict") if d.get("verdict") in {"reachable", "not_reachable", "uncertain"} else "uncertain"
-    cited = set(d.get("cited") or [])
-    if cited:  # keep cited evidence first so reports show the proof
-        ev.sort(key=lambda e: f"{e.file}:{e.line}" not in cited)
+    cited = [c for c in (d.get("cited") or []) if isinstance(c, str)]
+    valid = [c for c in cited if _cite_ok(idx, c)]
+    known = {(e.file, e.line) for e in ev}
+    for c in valid:  # a cited line outside the gathered evidence becomes evidence itself
+        file, line = c.rsplit(":", 1)
+        if (file, int(line)) not in known:
+            ev.append(Evidence(file, int(line), idx.snippet(file, int(line)), "cited"))
+    order = {c: i for i, c in enumerate(valid)}
+    ev.sort(key=lambda e: order.get(f"{e.file}:{e.line}", len(order)))
     try:
         conf = float(d.get("confidence", 0.5))
     except (TypeError, ValueError):
         conf = 0.5
-    return Reachability(intel.vuln_id, verdict, max(0.0, min(1.0, conf)),
-                        str(d.get("rationale") or ""), ev)
+    r = Reachability(intel.vuln_id, verdict, max(0.0, min(1.0, conf)),
+                     str(d.get("rationale") or ""), ev)
+    r.cited = valid
+    if verdict == "reachable" and not valid:
+        r.confidence = min(r.confidence, 0.6)  # an uncited "reachable" is weaker evidence
+    return r
+
+
+def _cite_ok(idx: PyIndex, c: str) -> bool:
+    m = re.match(r"^(.+):(\d+)$", c.strip())
+    if not m:
+        return False
+    lines = idx.sources.get(m.group(1)) or idx.templates.get(m.group(1))
+    return bool(lines) and 1 <= int(m.group(2)) <= len(lines)

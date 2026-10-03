@@ -43,7 +43,7 @@ def markdown_report(r: Run) -> str:
                       f"Verdict: **{it.reach.verdict}** ({it.reach.confidence:.0%})  ",
                       f"Why: {it.reach.rationale}  ",
                       f"Vulnerable code: `{', '.join(it.intel.vulnerable_symbols)}`"]
-            ev = [e for e in it.reach.evidence if e.kind == "call"][:2]
+            ev = it.proof[:2]
             for e in ev:
                 lines += ["", f"`{e.file}:{e.line}`", "```", e.snippet, "```"]
             if it.intel.sources:
@@ -56,7 +56,9 @@ def markdown_report(r: Run) -> str:
                   ("Compatibility bumps: " + ", ".join(f"{k} {a}→{b}" for k, (a, b) in f.compat_bumps.items()) + "  ")
                   if f.compat_bumps else "",
                   f"Baseline tests: {f.baseline.summary if f.baseline else '-'} · After fix: "
-                  f"{f.final.summary if f.final else '-'}", ""]
+                  f"{f.final.summary if f.final else '-'}  ",
+                  f"fix.patch re-applied to a pristine copy: {'yes' if f.patch_applies else 'no'}"
+                  f" · tests there: {f.patch_tests.summary if f.patch_tests else '-'}", ""]
         for rep in f.repairs:
             lines += [f"- Repair {rep['iteration']}: {', '.join(rep['files']) or 'no edits'} — "
                       f"{rep['rationale']} (tests {'pass' if rep['tests_ok'] else 'fail'})"]
@@ -88,10 +90,10 @@ code{background:#f6f8fa;padding:0 .25rem;border-radius:4px}.ok{color:#116329}.ba
 <p>{{ it.vuln.summary }}</p><p><b>Verdict:</b> {{ it.reach.verdict }} ({{ "%.0f"|format(it.reach.confidence*100) }}%) — {{ it.reach.rationale }}</p>
 <p><b>Vulnerable code:</b> <code>{{ it.intel.vulnerable_symbols|join(', ') }}</code>{% if it.intel.trigger_conditions %}<br><b>Triggered when:</b> {{ it.intel.trigger_conditions }}{% endif %}</p>
 <p><b>Fix:</b> upgrade to {{ it.finding.min_fix or 'n/a' }}</p>
-{% for e in it.reach.evidence if e.kind=='call' %}{% if loop.index <= 3 %}<div class="muted">{{ e.file }}:{{ e.line }}</div><pre>{{ e.snippet }}</pre>{% endif %}{% endfor %}
+{% for e in it.proof %}{% if loop.index <= 3 %}<div class="muted">{{ e.file }}:{{ e.line }}</div><pre>{{ e.snippet }}</pre>{% endif %}{% endfor %}
 {% if it.intel.sources %}<p class="muted">Sources: {% for s in it.intel.sources[:4] %}<a href="{{ s }}">{{ s[:70] }}</a> {% endfor %}</p>{% endif %}
 </details>{% endfor %}
-{% if r.fix %}<h2>Verified fix</h2><p>Status: <b>{{ r.fix.status }}</b> · baseline tests: {{ r.fix.baseline.summary if r.fix.baseline else '-' }} · after: {{ r.fix.final.summary if r.fix.final else '-' }}</p>
+{% if r.fix %}<h2>Verified fix</h2><p>Status: <b>{{ r.fix.status }}</b> · baseline tests: {{ r.fix.baseline.summary if r.fix.baseline else '-' }} · after: {{ r.fix.final.summary if r.fix.final else '-' }} · fix.patch re-applied to a pristine copy: {{ 'yes' if r.fix.patch_applies else 'no' }}{% if r.fix.patch_tests %} (tests: {{ r.fix.patch_tests.summary }}){% endif %}</p>
 <ul>{% for rep in r.fix.repairs %}<li>Repair {{ rep.iteration }}: {{ rep.files|join(', ') or 'no edits' }} — {{ rep.rationale }}</li>{% endfor %}
 {% for n in r.fix.notes %}<li>{{ n }}</li>{% endfor %}</ul>{% if r.fix.diff %}<pre>{{ r.fix.diff[:20000] }}</pre>{% endif %}{% endif %}
 </body></html>"""

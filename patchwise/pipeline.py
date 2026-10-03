@@ -29,6 +29,13 @@ class Item:
         return next(v for v in self.finding.vulns if v.id == self.vuln_id)
 
     @property
+    def proof(self) -> list:
+        """Evidence to show: the model's (validated) citations first, else candidate call sites."""
+        cited = set(self.reach.cited)
+        ev = [e for e in self.reach.evidence if f"{e.file}:{e.line}" in cited]
+        return ev or [e for e in self.reach.evidence if e.kind == "call"]
+
+    @property
     def priority(self) -> str:
         if self.reach.verdict == "reachable":
             return "fix-now"
@@ -74,7 +81,7 @@ def run(repo: Path, settings: Settings | None = None, *, do_fix: bool = True, lo
     log("[3/4] Reachability analysis against your code …")
     idx = PyIndex.build(repo)
     with ThreadPoolExecutor(max_workers=4) as ex:
-        reaches = list(ex.map(lambda a: analyze(idx, a[0][0], a[1], llm), zip(pairs, intels)))
+        reaches = list(ex.map(lambda a: analyze(idx, a[0][0], a[1], llm, deps), zip(pairs, intels)))
     r.items = sorted((Item(f, v.id, i, re) for (f, v), i, re in zip(pairs, intels, reaches)),
                      key=lambda it: it.sort_key)
     if do_fix and findings:
@@ -104,6 +111,8 @@ def to_json(r: Run) -> dict:
             "status": r.fix.status, "upgrades": r.fix.upgrades, "compat_bumps": r.fix.compat_bumps, "repairs": r.fix.repairs,
             "baseline": r.fix.baseline and r.fix.baseline.summary,
             "final": r.fix.final and r.fix.final.summary, "notes": r.fix.notes,
+            "patch_applies": r.fix.patch_applies,
+            "patch_tests": r.fix.patch_tests and r.fix.patch_tests.summary,
         },
     }
 

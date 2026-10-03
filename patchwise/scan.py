@@ -64,8 +64,23 @@ class Finding:
 _REQ = re.compile(r"^\s*([A-Za-z0-9_.\-\[\]]+)\s*==\s*([A-Za-z0-9_.\-+!]+)")
 
 
+def _first_sentence(text: str, limit: int = 140) -> str:
+    """PYSEC records often have no summary; use the first sentence of the details."""
+    t = " ".join(text.split())
+    m = re.match(r"(.+?[.!?])(\s|$)", t)
+    s = m.group(1) if m else t
+    return s if len(s) <= limit else s[:limit - 1].rstrip() + "…"
+
+
 def norm(name: str) -> str:
     return re.sub(r"[-_.]+", "-", name.split("[")[0]).lower()
+
+
+def is_requirements_file(p: Path, repo: Path) -> bool:
+    """requirements*.txt anywhere, or any .txt inside a requirements/ directory."""
+    rel = p.relative_to(repo)
+    return bool(re.match(r"requirements.*\.txt$", p.name, re.I)) or (
+        p.suffix == ".txt" and any(part.lower() in ("requirements", "reqs") for part in rel.parts[:-1]))
 
 
 def discover(repo: Path) -> list[Dependency]:
@@ -75,7 +90,7 @@ def discover(repo: Path) -> list[Dependency]:
         if any(part in skip for part in p.relative_to(repo).parts):
             continue
         rel = str(p.relative_to(repo))
-        if p.is_file() and re.match(r"requirements.*\.txt$", p.name):
+        if p.is_file() and is_requirements_file(p, repo):
             for i, line in enumerate(p.read_text(errors="ignore").splitlines(), 1):
                 m = _REQ.match(line.split("#")[0])
                 if m:
@@ -156,7 +171,7 @@ def lookup(deps: list[Dependency], client: httpx.Client | None = None) -> list[F
                         cache[vid] = client.get(f"{OSV}/vulns/{vid}").json()
                     v = cache[vid]
                     f.vulns.append(Vuln(
-                        id=vid, aliases=v.get("aliases") or [], summary=v.get("summary") or "",
+                        id=vid, aliases=v.get("aliases") or [], summary=v.get("summary") or _first_sentence(v.get("details") or ""),
                         details=(v.get("details") or "")[:4000], severity=_severity(v),
                         references=[x.get("url") for x in v.get("references") or [] if x.get("url")][:12],
                         fixed_versions=_fixed(v, dep), published=v.get("published"),

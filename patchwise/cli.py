@@ -18,8 +18,23 @@ def main(argv=None) -> int:
     ap.add_argument("--offline", action="store_true", help="heuristic mode without the LLM (dev only)")
     ap.add_argument("--fail-on", choices=["fix-now", "review", "never"], default="never",
                     help="CI gate: exit 1 if any advisory has this priority or worse")
+    ap.add_argument("--python", help="Python version for the test sandbox (default: .python-version or uv's default)")
+    ap.add_argument("--test-cmd", help="test command run inside the sandbox venv (default: python -m pytest -q)")
+    ap.add_argument("--requirements", action="append", default=[],
+                    help="requirements file(s) to install for tests (repeatable; default: all found)")
+    ap.add_argument("--with", dest="extra", action="append", default=[],
+                    help="extra package(s) needed only to run the tests (repeatable)")
+    ap.add_argument("--max-cost", type=float, help="hard USD ceiling for model spend in this run")
     a = ap.parse_args(argv)
     s = Settings()
+    if a.python:
+        s.python_version = a.python
+    if a.test_cmd:
+        s.test_command = a.test_cmd
+    s.install_requirements = a.requirements
+    s.extra_test_packages = a.extra
+    if a.max_cost is not None:
+        s.max_cost_usd = a.max_cost
     if a.offline:
         s.offline = True
     if not s.llm_available:

@@ -124,7 +124,7 @@ def research(f: Finding, v: Vuln, llm: LLM, tavily: Tavily | None) -> Intel:
                             aliases=", ".join(v.aliases) or "-", sev=v.severity, summary=v.summary,
                             details=v.details[:3000], sources="\n".join(web_chunks)[:9000] or "(none)")
     try:
-        d = llm.chat_json("fast", SYSTEM, user, max_tokens=1200)
+        d = llm.chat_json("fast", SYSTEM, user, max_tokens=1500, want=("vulnerable_symbols",), tag="research")
     except LLMError:
         return heuristic_intel(f, v)
     return Intel(v.id,
