@@ -235,6 +235,29 @@ class Sandbox:
                     x if x.endswith("\n") else x + "\n\\ No newline at end of file\n" for x in d))
         return "".join(chunks)
 
+    def changed_files(self) -> set[str]:
+        out = set()
+        for rel in self._files(self.work):
+            a, b = self.repo / rel, self.work / rel
+            try:
+                if not a.exists() or a.read_bytes() != b.read_bytes():
+                    out.add(rel)
+            except OSError:
+                continue
+        return out
+
+    def snapshot(self) -> dict[str, bytes]:
+        return {rel: (self.work / rel).read_bytes() for rel in self.changed_files()}
+
+    def restore(self, snap: dict[str, bytes]) -> None:
+        for rel in self.changed_files() | set(snap):
+            if rel in snap:
+                (self.work / rel).write_bytes(snap[rel])
+            elif (self.repo / rel).exists():
+                (self.work / rel).write_bytes((self.repo / rel).read_bytes())
+            else:
+                (self.work / rel).unlink(missing_ok=True)
+
     def verify_patch(self, patch: str) -> tuple[bool, str, "TestRun | None"]:
         """Independent check of the deliverable: apply fix.patch with `git apply` to a fresh,
         pristine copy of the repo, reinstall from scratch and re-run the tests there."""
@@ -750,6 +773,7 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
         res.notes.append("Upgraded dependency set could not be installed; code repair skipped "
                          "(an install failure is not something application edits can fix).")
     empty = 0
+    green = (sb.snapshot(), run) if run.ok else None  # last state whose tests passed
     feedback = None  # concerns from the post-fix review, fed back as a repair round
     reviews = 0
     while llm.online and run.summary != "dependency install failed" and it < settings.max_repair_iterations:
@@ -824,8 +848,10 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
         run = sb.test()
         if run.summary == "dependency install failed":
             res.notes.append(f"repair {it}: dependency install failed after edits; stopping.")
+        if run.ok:
+            green = (sb.snapshot(), run)
         if feedback:
-            res.notes.append(f"repair {it}: addressed review concern: {feedback[:300]}")
+            res.notes.append(f"repair {it}: attempted review concern: {feedback[:300]}")
             feedback = None
         res.repairs.append({"iteration": it, "files": changed,
                             "rationale": str(d.get("rationale") or d.get("explanation") or d.get("summary")
@@ -839,6 +865,12 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
                 break
         else:
             empty = 0
+    if not run.ok and green is not None:
+        sb.restore(green[0])
+        run = green[1]
+        sb.install()  # venv back in sync with the restored pins (verify_patch reinstalls anyway)
+        res.notes.append("Later (review-driven) repair rounds did not stay green; kept the last "
+                         "state whose tests passed.")
     res.final = run
     res.diff = sb.diff()
     res.patch_applies, why, res.patch_tests = sb.verify_patch(res.diff)

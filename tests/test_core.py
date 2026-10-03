@@ -219,3 +219,16 @@ def test_min_fix_never_picks_a_prerelease():
     f = Finding(Dependency("sqlalchemy", "1.1.11", "PyPI", "requirements.txt"),
                 [v("A", fixed=("1.2.18", "1.3.0b3")), v("B", fixed=("1.3.0b3",))])
     assert f.min_fix == "1.3.0"
+
+
+def test_sandbox_snapshot_restore(tmp_path):
+    repo = tmp_path / "r"
+    repo.mkdir()
+    (repo / "a.py").write_text("x = 1\n")
+    sb = Sandbox(repo, tmp_path / "w", Settings(offline=True))
+    sb.apply_edits([{"file": "a.py", "search": "x = 1", "replace": "x = 2"}])
+    snap = sb.snapshot()
+    sb.apply_edits([{"file": "a.py", "search": "x = 2", "replace": "x = 3"}])
+    (tmp_path / "w" / "b.py").write_text("y = 1\n")
+    sb.restore(snap)
+    assert (tmp_path / "w" / "a.py").read_text() == "x = 2\n" and not (tmp_path / "w" / "b.py").exists()
