@@ -19,6 +19,11 @@ class Dependency:
     ecosystem: str  # "PyPI" | "npm"
     manifest: str   # relative path of the file that pins it
     line: int | None = None
+    also_in: list = field(default_factory=list)  # other manifests pinning the same version
+
+    @property
+    def manifests(self) -> list[str]:
+        return [self.manifest, *self.also_in]
 
 
 @dataclass
@@ -108,13 +113,26 @@ def discover(repo: Path) -> list[Dependency]:
                 name = key.split("node_modules/")[-1]
                 deps.append(Dependency(name, meta["version"], "npm", rel))
     # de-duplicate
-    seen, out = set(), []
+    seen: dict = {}
+    out = []
     for d in deps:
         k = (d.ecosystem, d.name, d.version)
         if k not in seen:
-            seen.add(k)
+            seen[k] = d
             out.append(d)
+        elif d.manifest not in seen[k].manifests:
+            seen[k].also_in.append(d.manifest)
     return out
+
+
+DEV_TOKENS = {"dev", "devel", "develop", "test", "tests", "testing", "ci", "lint", "docs", "doc",
+              "typing", "mypy", "bench", "benchmarks"}
+
+
+def is_dev_manifest(path: str) -> bool:
+    """requirements-dev.txt, requirements/test.txt, dev-requirements.txt, test-requirements.txt …"""
+    tokens = set(re.split(r"[-_./\\]+", path.lower().removesuffix(".txt")))
+    return bool(tokens & DEV_TOKENS)
 
 
 def _severity(v: dict) -> str:

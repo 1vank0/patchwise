@@ -24,6 +24,7 @@ class Intel:
     fix_notes: str = ""
     sources: list[str] = field(default_factory=list)
     method: str = "llm"            # "llm" | "heuristic"
+    platforms: list[str] = field(default_factory=list)  # OSes the flaw is limited to; [] = any
 
     def to_dict(self):
         return asdict(self)
@@ -83,7 +84,28 @@ Web sources:
 
 Return JSON:
 {{"vulnerable_symbols": [str], "trigger_conditions": str, "attack_vector": str,
-  "public_exploit": true|false|null, "fix_notes": str, "sources_used": [url]}}"""
+  "public_exploit": true|false|null, "fix_notes": str, "sources_used": [url],
+  "platforms": [str]}}
+"platforms": operating systems the flaw is LIMITED to ("windows", "macos", "linux"); [] when it
+is not OS-specific (most flaws)."""
+
+
+OS_WORDS = {"windows": r"windows", "macos": r"mac ?os|os x|darwin", "linux": r"linux"}
+_ONLY = re.compile(r"\b(on|only on|only affects?|specific to|special device names? on)\s+(windows|mac ?os|os x)\b"
+                   r"|\bwindows[- ]only\b|\bwindows (special )?device names?\b|\bnot safe on windows\b", re.I)
+
+
+def platform_limits(text: str, claimed: list | None = None) -> list[str]:
+    """OSes an advisory is restricted to. A model claim counts only if the advisory text itself
+    names that OS (guards against hallucination); otherwise fall back to explicit phrasing such
+    as 'on Windows' / 'Windows device names'."""
+    t = text.lower()
+    out = [o for o in (claimed or []) if isinstance(o, str) and o.lower() in OS_WORDS
+           and re.search(OS_WORDS[o.lower()], t)]
+    if not out and _ONLY.search(text):
+        m = _ONLY.search(text).group(0).lower()
+        out = ["macos"] if re.search(OS_WORDS["macos"], m) else ["windows"]
+    return sorted({o.lower() for o in out})
 
 
 _TICK = re.compile(r"`([A-Za-z_][\w.]*(?:\(\))?)`")
@@ -97,7 +119,8 @@ def heuristic_intel(f: Finding, v: Vuln) -> Intel:
             syms.append(s)
     return Intel(v.id, vulnerable_symbols=syms[:8] or ["*"],
                  trigger_conditions=v.summary, fix_notes=f"Upgrade to {f.min_fix}" if f.min_fix else "",
-                 sources=v.references[:3], method="heuristic")
+                 sources=v.references[:3], method="heuristic",
+                 platforms=platform_limits(v.summary + "\n" + v.details))
 
 
 def research(f: Finding, v: Vuln, llm: LLM, tavily: Tavily | None) -> Intel:
@@ -133,4 +156,5 @@ def research(f: Finding, v: Vuln, llm: LLM, tavily: Tavily | None) -> Intel:
                  attack_vector=str(d.get("attack_vector") or ""),
                  public_exploit=d.get("public_exploit"),
                  fix_notes=str(d.get("fix_notes") or ""),
-                 sources=[u for u in (d.get("sources_used") or urls) if isinstance(u, str)][:6])
+                 sources=[u for u in (d.get("sources_used") or urls) if isinstance(u, str)][:6],
+                 platforms=platform_limits(v.summary + "\n" + v.details, d.get("platforms")))

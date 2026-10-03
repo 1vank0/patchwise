@@ -10,9 +10,9 @@ from pathlib import Path
 from .config import Settings
 from .fix import FixResult, fix
 from .llm import LLM
-from .reach import PyIndex, Reachability, analyze
+from .reach import PyIndex, Reachability, analyze_group, group_advisories
 from .research import Intel, Tavily, research
-from .scan import Finding, discover, lookup
+from .scan import Finding, Vuln, discover, lookup
 
 SEV_RANK = {"CRITICAL": 4, "HIGH": 3, "MODERATE": 2, "MEDIUM": 2, "LOW": 1}
 
@@ -38,7 +38,7 @@ class Item:
     @property
     def priority(self) -> str:
         if self.reach.verdict == "reachable":
-            return "fix-now"
+            return "review" if self.reach.dev_only else "fix-now"
         if self.reach.verdict == "uncertain":
             return "review"
         return "deprioritize"
@@ -60,6 +60,27 @@ class Run:
     tavily_calls: int = 0
     mode: str = "online"
     seconds: float = 0.0
+    fix_scope: str = "fix-now"
+
+
+SCOPES = {"fix-now": {"fix-now"}, "review": {"fix-now", "review"}, "all": {"fix-now", "review", "deprioritize"}}
+
+
+def fix_targets(items: list[Item], scope: str = "fix-now") -> list[Finding]:
+    """Findings to upgrade, each restricted to the advisories in scope, so a package is raised
+    only as far as its in-scope advisories require (not to the fix of an unreachable one)."""
+    want = SCOPES.get(scope, SCOPES["fix-now"])
+    keep: dict[int, tuple[Finding, list[Vuln]]] = {}
+    for it in items:
+        if it.priority in want:
+            f = it.finding
+            keep.setdefault(id(f), (f, []))[1].append(it.vuln)
+    out = []
+    for f, vulns in keep.values():
+        sub = Finding(f.dep, vulns)
+        if sub.min_fix:
+            out.append(sub)
+    return out
 
 
 def run(repo: Path, settings: Settings | None = None, *, do_fix: bool = True, log=print) -> Run:
@@ -78,16 +99,42 @@ def run(repo: Path, settings: Settings | None = None, *, do_fix: bool = True, lo
     pairs = [(f, v) for f in findings for v in f.vulns]
     with ThreadPoolExecutor(max_workers=4) as ex:
         intels = list(ex.map(lambda fv: research(fv[0], fv[1], llm, tavily), pairs))
+    for (f, v), i in zip(pairs, intels):
+        log(f"      {f.dep.name} {v.id}: {', '.join(i.vulnerable_symbols[:3])[:90]}"
+            + (f"  [{'/'.join(i.platforms)} only]" if i.platforms else ""))
     log("[3/4] Reachability analysis against your code …")
     idx = PyIndex.build(repo)
+    intel_of = {v.id: i for (f, v), i in zip(pairs, intels)}
     with ThreadPoolExecutor(max_workers=4) as ex:
-        reaches = list(ex.map(lambda a: analyze(idx, a[0][0], a[1], llm, deps), zip(pairs, intels)))
-    r.items = sorted((Item(f, v.id, i, re) for (f, v), i, re in zip(pairs, intels, reaches)),
-                     key=lambda it: it.sort_key)
+        grouped = list(ex.map(lambda f: (f, group_advisories(f, [intel_of[v.id] for v in f.vulns], llm)), findings))
+    jobs = [(f, g) for f, groups in grouped for g in groups]
+    sib = sum(len(g) for _, g in jobs if len(g) > 1)
+    log(f"      {len(pairs)} advisories → {len(jobs)} judgments ({sib} advisories judged with siblings)")
+    with ThreadPoolExecutor(max_workers=4) as ex:
+        results = list(ex.map(lambda j: analyze_group(idx, j[0], j[1], llm, deps, settings.deploy_os), jobs))
+    reach_of = {rc.vuln_id: rc for res in results for rc in res}
+    r.items = sorted((Item(f, v.id, intel_of[v.id], reach_of[v.id]) for f, v in pairs), key=lambda it: it.sort_key)
+    for it in r.items:
+        cite = f" ({it.reach.cited[0]})" if it.reach.cited else ""
+        note = " [dev/test only]" if it.reach.dev_only and it.reach.verdict == "reachable" else ""
+        log(f"      {it.priority:>12}  {it.finding.dep.name} {it.vuln_id}{cite}{note}")
     if do_fix and findings:
-        log("[4/4] Building a verified fix in a sandbox …")
-        r.fix = fix(repo, findings, settings, llm, tavily, log=log)
-        log(f"      fix status: {r.fix.status}")
+        targets = fix_targets(r.items, settings.fix_scope)
+        r.fix_scope = settings.fix_scope
+        if not targets:
+            r.fix = FixResult(status="skipped", notes=[f"No advisories in scope '{settings.fix_scope}' "
+                                                     "have a fixed version; nothing to upgrade."])
+            log(f"[4/4] Nothing to fix in scope '{settings.fix_scope}'")
+        else:
+            log(f"[4/4] Building a verified fix in a sandbox (scope: {settings.fix_scope}; "
+                f"{', '.join(t.dep.name for t in targets)}) …")
+            r.fix = fix(repo, targets, settings, llm, tavily, log=log)
+            log(f"      fix status: {r.fix.status}")
+        nofix = [it for it in r.items if it.priority in SCOPES.get(settings.fix_scope, SCOPES["fix-now"])
+                 and not Finding(it.finding.dep, [it.vuln]).min_fix]
+        for it in nofix:
+            r.fix.notes.append(f"{it.finding.dep.name} {it.vuln_id} has no patched release; mitigate in code "
+                               f"({it.vuln.summary[:90]}).")
     r.llm_usage = {"calls": llm.usage.calls, "input_tokens": llm.usage.input_tokens,
                    "output_tokens": llm.usage.output_tokens, "cost_usd": round(llm.usage.cost_usd, 5),
                    "by_model": llm.usage.by_model}
@@ -98,8 +145,9 @@ def run(repo: Path, settings: Settings | None = None, *, do_fix: bool = True, lo
 
 def to_json(r: Run) -> dict:
     return {
-        "repo": r.repo, "mode": r.mode, "seconds": r.seconds, "deps_scanned": r.deps_scanned,
-        "llm_usage": r.llm_usage, "tavily_calls": r.tavily_calls,
+        "repo": r.repo, "name": Path(r.repo).name, "mode": r.mode,
+        "generated": time.strftime("%Y-%m-%d %H:%M", time.localtime(r.started)), "seconds": r.seconds, "deps_scanned": r.deps_scanned,
+        "llm_usage": r.llm_usage, "tavily_calls": r.tavily_calls, "fix_scope": r.fix_scope,
         "items": [{
             "package": it.finding.dep.name, "version": it.finding.dep.version,
             "ecosystem": it.finding.dep.ecosystem, "manifest": it.finding.dep.manifest,
@@ -112,7 +160,7 @@ def to_json(r: Run) -> dict:
             "baseline": r.fix.baseline and r.fix.baseline.summary,
             "final": r.fix.final and r.fix.final.summary, "notes": r.fix.notes,
             "patch_applies": r.fix.patch_applies, "review": r.fix.review,
-            "patch_tests": r.fix.patch_tests and r.fix.patch_tests.summary,
+            "patch_tests": r.fix.patch_tests and r.fix.patch_tests.summary, "diff": r.fix.diff,
         },
     }
 

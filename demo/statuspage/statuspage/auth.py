@@ -1,4 +1,5 @@
-"""Admin session tokens."""
+"""Admin session tokens. verify_admin_token() is called with the bearer token taken from the
+Authorization header of every request to the admin API."""
 import time
 
 import jwt

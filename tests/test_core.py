@@ -232,3 +232,88 @@ def test_sandbox_snapshot_restore(tmp_path):
     (tmp_path / "w" / "b.py").write_text("y = 1\n")
     sb.restore(snap)
     assert (tmp_path / "w" / "a.py").read_text() == "x = 2\n" and not (tmp_path / "w" / "b.py").exists()
+
+
+# --- consistency, platform, dev-only, fix scope -------------------------------------------
+
+def test_platform_limited_advisory_is_not_reachable_on_linux_without_a_model_call():
+    from patchwise.research import platform_limits
+    idx = PyIndex.build(DEMO)
+    f = Finding(Dependency("werkzeug", "2.0.0", "PyPI", "requirements.txt"),
+                [v("GHSA-x", summary="Werkzeug safe_join() allows Windows special device names")])
+    intel = Intel("GHSA-x", vulnerable_symbols=["werkzeug.utils.safe_join"],
+                  platforms=platform_limits(f.vulns[0].summary, ["windows"]))
+    llm = FakeLLM([])
+    r = analyze(idx, f, intel, llm)
+    assert r.verdict == "not_reachable" and r.method == "platform" and not llm.prompts
+    assert analyze(idx, f, intel, FakeLLM(['{"verdict":"reachable","cited":[]}']), deploy_os="windows").verdict == "reachable"
+    assert platform_limits("High resource usage when parsing multipart form data", ["windows"]) == []
+
+
+def test_sibling_advisories_get_one_verdict_and_platform_groups_stay_apart():
+    from patchwise.reach import analyze_group, group_advisories
+    idx = PyIndex.build(DEMO)
+    f = Finding(Dependency("certifi", "2020.1.1", "PyPI", "requirements.txt"),
+                [v("GHSA-a", summary="Removal of e-Tugra root certificate"),
+                 v("GHSA-b", summary="Certifi removes GLOBALTRUST root certificate"),
+                 v("GHSA-c", summary="Windows only thing")])
+    intels = [Intel("GHSA-a", ["certifi.where"]), Intel("GHSA-b", ["certifi.where"]),
+              Intel("GHSA-c", ["certifi.where"], platforms=["windows"]), Intel("GHSA-d", ["certifi.contents"])]
+    f.vulns.append(v("GHSA-d", summary="Unrelated parsing bug"))
+    llm = FakeLLM(['{"groups": [["GHSA-a", "GHSA-b", "GHSA-c", "GHSA-d", "GHSA-zzz"]]}'])
+    groups = group_advisories(f, intels, llm)
+    # the platform-limited one and the unrelated one (no shared symbols, different summary) split off
+    assert [[i.vuln_id for i in g] for g in groups] == [["GHSA-a", "GHSA-b"], ["GHSA-c"], ["GHSA-d"]]
+    llm2 = FakeLLM(['{"verdict":"not_reachable","confidence":0.8,"rationale":"x","cited":[]}'])
+    rs = analyze_group(idx, f, groups[0], llm2)
+    assert {r.vuln_id for r in rs} == {"GHSA-a", "GHSA-b"} and {r.verdict for r in rs} == {"not_reachable"}
+    assert rs[0].group == ["GHSA-b"] and len(llm2.prompts) == 1 and "judge together" in llm2.prompts[0][1]
+
+
+def test_dev_only_dependencies_are_review_not_fix_now(tmp_path):
+    from patchwise.pipeline import Item
+    from patchwise.reach import Reachability, dev_only, is_test_path
+    repo = tmp_path / "r"
+    (repo / "app").mkdir(parents=True)
+    (repo / "app" / "testing.py").write_text("import selenium\n")
+    (repo / "app" / "main.py").write_text("import yaml\n")
+    idx = PyIndex.build(repo)
+    sel = Finding(Dependency("selenium", "3.0", "PyPI", "requirements.txt"), [v("X")])
+    yml = Finding(Dependency("pyyaml", "5.1", "PyPI", "requirements.txt"), [v("Y")])
+    dev = Finding(Dependency("pytest", "6.0", "PyPI", "requirements-dev.txt"), [v("Z")])
+    assert "test/dev code" in dev_only(idx, sel, []) and dev_only(idx, yml, []) == ""
+    assert "dev/test requirements" in dev_only(idx, dev, [])
+    assert is_test_path("tests/x.py") and is_test_path("pkg/conftest.py") and not is_test_path("app/views.py")
+    it = Item(sel, "X", Intel("X"), Reachability("X", "reachable", 0.9, "r", dev_only="imported only from tests"))
+    assert it.priority == "review"
+
+
+def test_brotli_through_urllib3_is_marked_auto_used():
+    from patchwise.reach import auto_note
+    assert "brotli" in auto_note("requests > urllib3 (optional extra)", "brotli")
+    assert auto_note("requests", "urllib3") == ""
+
+
+def test_fix_targets_respect_scope_and_only_raise_as_far_as_needed():
+    from patchwise.pipeline import Item, fix_targets
+    from patchwise.reach import Reachability
+    f = Finding(Dependency("pyjwt", "1.7.1", "PyPI", "requirements.txt"),
+                [v("A", fixed=("2.4.0",)), v("B", fixed=("2.12.0",))])
+    g = Finding(Dependency("jinja2", "2.11.2", "PyPI", "requirements.txt"), [v("C", fixed=("3.1.6",))])
+    items = [Item(f, "A", Intel("A"), Reachability("A", "reachable", .9, "")),
+             Item(f, "B", Intel("B"), Reachability("B", "not_reachable", .9, "")),
+             Item(g, "C", Intel("C"), Reachability("C", "uncertain", .5, ""))]
+    t = fix_targets(items)
+    assert [(x.dep.name, x.min_fix) for x in t] == [("pyjwt", "2.4.0")]
+    assert {x.dep.name for x in fix_targets(items, "review")} == {"pyjwt", "jinja2"}
+    assert [x.min_fix for x in fix_targets(items, "all") if x.dep.name == "pyjwt"] == ["2.12.0"]
+
+
+def test_project_code_never_sees_api_keys(monkeypatch):
+    from patchwise.fix import safe_env
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    monkeypatch.setenv("TAVILY_API_KEY", "secret")
+    monkeypatch.setenv("GITHUB_TOKEN", "secret")
+    env = safe_env({"VIRTUAL_ENV": "/v"})
+    assert "NEBIUS_API_KEY" not in env and "GITHUB_TOKEN" not in env and env["VIRTUAL_ENV"] == "/v"
+    assert "PATH" in env
