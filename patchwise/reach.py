@@ -432,7 +432,12 @@ def analyze_group(idx: PyIndex, f: Finding, intels: list[Intel], llm: LLM, deps:
         if (file, int(line)) not in known:
             ev.append(Evidence(file, int(line), idx.snippet(file, int(line)), "cited"))
     order = {c: i for i, c in enumerate(valid)}
-    ev.sort(key=lambda e: order.get(f"{e.file}:{e.line}", len(order)))
+    # cited lines first; among them the actual call site leads (it is the headline citation),
+    # then context lines (e.g. a docstring naming the input source), then bare imports
+    rank = {"call": 0, "cited": 2, "import": 3, "import-via": 3}
+    ev.sort(key=lambda e: (f"{e.file}:{e.line}" not in order, rank.get(e.kind, 1),
+                           order.get(f"{e.file}:{e.line}", len(order))))
+    valid.sort(key=lambda c: next((rank.get(e.kind, 1) for e in ev if f"{e.file}:{e.line}" == c), 1))
     try:
         conf = float(d.get("confidence", 0.5))
     except (TypeError, ValueError):
