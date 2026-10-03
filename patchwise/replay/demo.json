@@ -1,0 +1,3061 @@
+{
+ "recorded": "2026-10-03",
+ "events": [
+  [
+   0.51,
+   "[1/4] Discovering dependencies in statuspage \u2026"
+  ],
+  [
+   7.52,
+   "      6 pinned deps, 5 vulnerable, 32 advisories (OSV.dev)"
+  ],
+  [
+   7.52,
+   "[2/4] Researching advisories (Tavily + Nemotron) \u2026"
+  ],
+  [
+   26.67,
+   "      jinja2 GHSA-cpwx-vrp4-4pq7: jinja2.sandbox.SandboxedEnvironment.attr, jinja2.sandbox.SandboxedEnvironment.getattr"
+  ],
+  [
+   26.67,
+   "      jinja2 GHSA-g3rq-g295-4j3m: jinja2.urlize, jinja2.utils.Markup"
+  ],
+  [
+   26.67,
+   "      jinja2 GHSA-h5c8-rqwp-cp95: xmlattr filter"
+  ],
+  [
+   26.67,
+   "      jinja2 GHSA-h75v-3vvj-5mfj: xmlattr filter with user-controlled keys"
+  ],
+  [
+   26.67,
+   "      jinja2 GHSA-q2x7-8rv6-6q7h: jinja2.sandbox.SandboxedEnvironment, jinja2.sandbox.SandboxedEnvironment.call_filter, jinj"
+  ],
+  [
+   26.67,
+   "      pyyaml GHSA-8q59-q68h-6hv4: yaml.load, yaml.FullLoader, yaml.safe_load"
+  ],
+  [
+   26.67,
+   "      pyjwt GHSA-2gx3-rcp4-g85q: jwt.jwks_client.PyJWKClient.get_signing_key, jwt.jwks_client.PyJWKClient.get_signing_keys,"
+  ],
+  [
+   26.67,
+   "      pyjwt GHSA-752w-5fwx-jx9f: jwt.decode, jwt.encode"
+  ],
+  [
+   26.67,
+   "      pyjwt GHSA-9v7f-9g4p-ffgj: PyJWKClient"
+  ],
+  [
+   26.67,
+   "      pyjwt GHSA-ffc3-869f-jxw9: jwt.decode, jwt.algorithms.HMACAlgorithm.prepare_key, jwt.utils.is_pem_format"
+  ],
+  [
+   26.67,
+   "      pyjwt GHSA-ffqj-6fqr-9h24: jwt.encode with algorithm=\"HS256\", jwt.decode with algorithms=jwt.algorithms.get_default_a"
+  ],
+  [
+   26.67,
+   "      pyjwt GHSA-hxm8-2xgr-2p9m: pyjwt.decode, pyjwt.encode, jwt.encode"
+  ],
+  [
+   26.67,
+   "      pyjwt GHSA-jwrc-g2q2-pq5p: _PEM_RE.search, is_pem_format"
+  ],
+  [
+   26.67,
+   "      pyjwt GHSA-xgmm-8j9v-c9wx: jwt.api_jws.PyJWS.decode, jwt.api_jws.PyJWS.encode, jwt.algorithms.HMACAlgorithm.prepare_k"
+  ],
+  [
+   26.67,
+   "      pyjwt PYSEC-2025-183: jwt.encode, jwt.decode"
+  ],
+  [
+   26.67,
+   "      pyjwt PYSEC-2026-175: PyJWKClient"
+  ],
+  [
+   26.67,
+   "      pyjwt PYSEC-2026-177: pyjwt.PyJWKClient.get_signing_key"
+  ],
+  [
+   26.67,
+   "      requests GHSA-9hjg-9r4m-mvj7: requests.Session.trust_env, requests.Session"
+  ],
+  [
+   26.67,
+   "      requests GHSA-9wx4-h78v-vm56: requests.Session, requests.Session.request, requests.adapters.HTTPAdapter"
+  ],
+  [
+   26.67,
+   "      requests GHSA-gc5v-m9x4-r6x2: requests.utils.extract_zipped_paths()"
+  ],
+  [
+   26.67,
+   "      requests GHSA-j8r2-6x86-q33q: requests.sessions.Session.rebuild_proxies, requests.sessions.Session.send, requests.adapte"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-2xpw-w6gg-jr37: urllib3.HTTPResponse.stream, urllib3.HTTPResponse.read, urllib3.HTTPResponse.read1"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-34jh-p97f-mpxf: Proxy-Authorization header, ProxyManager"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-38jv-5279-wg99: urllib3.PoolManager.request, urllib3.HTTPConnectionPool.urlopen, urllib3.response.decode"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-8988-9cw3-xx77: urllib3.ProxyManager, urllib3.HTTPConnectionPool.urlopen, urllib3.util.ssl_.create_urllib3"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-g4mx-q9vg-27p4: urllib3.util.url.parse_url, urllib3.util.url.url_to_request, urllib3.connectionpool.HTTPCo"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-gm62-xv2j-4w53: urllib3.PoolManager.request, urllib3.HTTPConnectionPool.urlopen"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-pq67-6m6q-mj2v: urllib3.PoolManager(retries=0), urllib3.PoolManager(retries=urllib3.Retry(redirect=0)), ur"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-q2q7-5pp4-w6pg: urllib3.util.url.parse_url, urllib3.util.url.parse_url2"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-qccp-gfcp-xxvc: ProxyManager.connection_from_url, HTTPConnection.urlopen, assert_same_host=False"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-v845-jxx5-vc9f: urllib3.util.url.parse_url, urllib3.connectionpool.HTTPConnectionPool.urlopen, urllib3.req"
+  ],
+  [
+   26.67,
+   "      urllib3 GHSA-vxq7-64xx-v4gw: urllib3.response.BaseHTTPResponse.read_chunked, urllib3.response.BaseHTTPResponse.stream, "
+  ],
+  [
+   26.67,
+   "[3/4] Reachability analysis against your code \u2026"
+  ],
+  [
+   36.81,
+   "      32 advisories \u2192 30 judgments (4 advisories judged with siblings)"
+  ],
+  [
+   62.63,
+   "            FIX NOW  pyyaml GHSA-8q59-q68h-6hv4 (statuspage/config.py:7)"
+  ],
+  [
+   62.63,
+   "            FIX NOW  pyjwt GHSA-752w-5fwx-jx9f (statuspage/auth.py:16)"
+  ],
+  [
+   62.63,
+   "            FIX NOW  pyjwt PYSEC-2025-183 (statuspage/auth.py:11)"
+  ],
+  [
+   62.63,
+   "            FIX NOW  urllib3 GHSA-gm62-xv2j-4w53 (statuspage/checks.py:7)"
+  ],
+  [
+   62.63,
+   "            FIX NOW  urllib3 GHSA-q2q7-5pp4-w6pg (statuspage/checks.py:2)"
+  ],
+  [
+   62.63,
+   "            FIX NOW  urllib3 GHSA-vxq7-64xx-v4gw (statuspage/checks.py:7)"
+  ],
+  [
+   62.63,
+   "            FIX NOW  pyjwt GHSA-hxm8-2xgr-2p9m (statuspage/auth.py:16)"
+  ],
+  [
+   62.63,
+   "      not reachable  pyjwt GHSA-ffc3-869f-jxw9 (statuspage/auth.py:5)"
+  ],
+  [
+   62.63,
+   "      not reachable  pyjwt GHSA-9v7f-9g4p-ffgj"
+  ],
+  [
+   62.63,
+   "      not reachable  pyjwt GHSA-ffqj-6fqr-9h24 (statuspage/auth.py:16)"
+  ],
+  [
+   62.63,
+   "      not reachable  pyjwt GHSA-xgmm-8j9v-c9wx (statuspage/auth.py:11)"
+  ],
+  [
+   62.63,
+   "      not reachable  urllib3 GHSA-2xpw-w6gg-jr37 (statuspage/checks.py:7)"
+  ],
+  [
+   62.63,
+   "      not reachable  urllib3 GHSA-38jv-5279-wg99 (statuspage/checks.py:2)"
+  ],
+  [
+   62.63,
+   "      not reachable  urllib3 GHSA-8988-9cw3-xx77 (statuspage/checks.py:7)"
+  ],
+  [
+   62.63,
+   "      not reachable  urllib3 GHSA-qccp-gfcp-xxvc (statuspage/checks.py:2)"
+  ],
+  [
+   62.63,
+   "      not reachable  urllib3 GHSA-v845-jxx5-vc9f (statuspage/checks.py:2)"
+  ],
+  [
+   62.63,
+   "      not reachable  jinja2 GHSA-cpwx-vrp4-4pq7 (statuspage/render.py:14)"
+  ],
+  [
+   62.63,
+   "      not reachable  jinja2 GHSA-g3rq-g295-4j3m (statuspage/render.py:2)"
+  ],
+  [
+   62.63,
+   "      not reachable  jinja2 GHSA-h5c8-rqwp-cp95"
+  ],
+  [
+   62.63,
+   "      not reachable  jinja2 GHSA-h75v-3vvj-5mfj"
+  ],
+  [
+   62.63,
+   "      not reachable  jinja2 GHSA-q2x7-8rv6-6q7h (statuspage/render.py:2)"
+  ],
+  [
+   62.63,
+   "      not reachable  pyjwt GHSA-2gx3-rcp4-g85q (statuspage/auth.py:5)"
+  ],
+  [
+   62.63,
+   "      not reachable  pyjwt GHSA-jwrc-g2q2-pq5p (statuspage/auth.py:5)"
+  ],
+  [
+   62.63,
+   "      not reachable  pyjwt PYSEC-2026-175 (statuspage/auth.py:5)"
+  ],
+  [
+   62.63,
+   "      not reachable  requests GHSA-9hjg-9r4m-mvj7 (statuspage/checks.py:7)"
+  ],
+  [
+   62.63,
+   "      not reachable  requests GHSA-9wx4-h78v-vm56 (statuspage/checks.py:2)"
+  ],
+  [
+   62.63,
+   "      not reachable  requests GHSA-gc5v-m9x4-r6x2"
+  ],
+  [
+   62.63,
+   "      not reachable  requests GHSA-j8r2-6x86-q33q (statuspage/checks.py:7)"
+  ],
+  [
+   62.63,
+   "      not reachable  urllib3 GHSA-34jh-p97f-mpxf (statuspage/checks.py:7)"
+  ],
+  [
+   62.63,
+   "      not reachable  urllib3 GHSA-g4mx-q9vg-27p4 (statuspage/checks.py:7)"
+  ],
+  [
+   62.63,
+   "      not reachable  urllib3 GHSA-pq67-6m6q-mj2v (statuspage/checks.py:7)"
+  ],
+  [
+   62.63,
+   "      not reachable  pyjwt PYSEC-2026-177 (statuspage/auth.py:5)"
+  ],
+  [
+   62.63,
+   "[4/4] Building a verified fix in a sandbox (scope: fix-now; pyyaml, pyjwt, urllib3) \u2026"
+  ],
+  [
+   62.63,
+   "  running baseline tests\u2026"
+  ],
+  [
+   63.2,
+   "  upgraded pins: pyyaml->5.4, pyjwt->2.14.0, urllib3->2.8.0; re-running tests\u2026"
+  ],
+  [
+   63.25,
+   "  resolver: compatible bumps needed: requests->2.30.0"
+  ],
+  [
+   63.76,
+   "  pyyaml==5.4 does not build on this Python; trying 5.4.1"
+  ],
+  [
+   64.24,
+   "  pyyaml==5.4.1 does not build on this Python; trying 6.0"
+  ],
+  [
+   71.06,
+   "  repair 1: edited ['statuspage/auth.py']; re-running tests\u2026"
+  ],
+  [
+   73.72,
+   "  review 1: behaviour preserved"
+  ],
+  [
+   74.31,
+   "      fix status: verified_with_code_changes"
+  ],
+  [
+   74.35,
+   "7 fix now \u00b7 0 review \u00b7 25 not reachable"
+  ],
+  [
+   74.35,
+   "fix: verified_with_code_changes"
+  ],
+  [
+   74.35,
+   "Nemotron: 69 calls, $0.0426"
+  ]
+ ],
+ "report": {
+  "repo": "/tmp/patchwise-web/pw-rec-t5c5at2o/statuspage",
+  "name": "statuspage",
+  "mode": "online",
+  "generated": "2026-10-03 17:27",
+  "seconds": 73.8,
+  "deps_scanned": 6,
+  "llm_usage": {
+   "calls": 69,
+   "input_tokens": 68305,
+   "output_tokens": 32212,
+   "cost_usd": 0.04261,
+   "by_model": {
+    "nvidia/Nemotron-3_5-Lightning": {
+     "calls": 33,
+     "in": 25860,
+     "out": 9643,
+     "cost_usd": 0.0038659199999999997
+    },
+    "nvidia/nemotron-3-super-120b-a12b": {
+     "calls": 35,
+     "in": 40991,
+     "out": 20340,
+     "cost_usd": 0.030603299999999993
+    },
+    "nvidia/Nemotron-3-Ultra-550b-a55b": {
+     "calls": 1,
+     "in": 1454,
+     "out": 2229,
+     "cost_usd": 0.008141
+    }
+   }
+  },
+  "tavily_calls": 35,
+  "fix_scope": "fix-now",
+  "items": [
+   {
+    "package": "pyyaml",
+    "version": "5.3.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-8q59-q68h-6hv4",
+    "aliases": [
+     "CVE-2020-14343",
+     "PYSEC-2021-142"
+    ],
+    "severity": "CRITICAL",
+    "summary": "Improper Input Validation in PyYAML",
+    "min_fix": "5.4",
+    "priority": "fix-now",
+    "intel": {
+     "vuln_id": "GHSA-8q59-q68h-6hv4",
+     "vulnerable_symbols": [
+      "yaml.load",
+      "yaml.FullLoader",
+      "yaml.safe_load",
+      "yaml.SafeLoader"
+     ],
+     "trigger_conditions": "Processing untrusted YAML input with yaml.load() without specifying a Loader, or explicitly using yaml.FullLoader. The vulnerability is triggered when the YAML document contains a python/object/new constructor entry.",
+     "attack_vector": "Remote code execution via crafted YAML payload sent to an application that parses untrusted YAML using the vulnerable functions/classes.",
+     "public_exploit": true,
+     "fix_notes": "Upgrade to PyYAML version 5.4 or later. The maintainers added a deprecation warning when yaml.load() is called without an explicit Loader, and the FullLoader now blocks the python/object/new constructor.",
+     "sources": [
+      "https://github.com/advisories/GHSA-8q59-q68h-6hv4",
+      "https://nvd.nist.gov/vuln/detail/CVE-2020-14343"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-8q59-q68h-6hv4",
+     "verdict": "reachable",
+     "confidence": 0.95,
+     "rationale": "The code calls yaml.load with Loader=yaml.FullLoader on raw input supplied by customers (untrusted YAML). This matches the vulnerability trigger condition for GHSA-8q59-q68h-6hv4.",
+     "evidence": [
+      {
+       "file": "statuspage/config.py",
+       "line": 7,
+       "snippet": "   5| def load_tenant_config(raw: str) -> dict:\n   6|     # Customers upload this file; we need custom tags for !env lookups.\n   7|     return yaml.load(raw, Loader=yaml.FullLoader)\n   8| \n   9| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/config.py",
+       "line": 2,
+       "snippet": "   2| import yaml",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/config.py",
+       "line": 12,
+       "snippet": "  10| def load_defaults(path: str) -> dict:\n  11|     with open(path) as fh:\n  12|         return yaml.safe_load(fh)",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/config.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-752w-5fwx-jx9f",
+    "aliases": [
+     "CVE-2026-32597",
+     "PYSEC-2026-120"
+    ],
+    "severity": "HIGH",
+    "summary": "PyJWT accepts unknown `crit` header extensions",
+    "min_fix": "2.14.0",
+    "priority": "fix-now",
+    "intel": {
+     "vuln_id": "GHSA-752w-5fwx-jx9f",
+     "vulnerable_symbols": [
+      "jwt.decode",
+      "jwt.encode"
+     ],
+     "trigger_conditions": "Token contains a 'crit' header array with at least one extension not in PyJWT's supported list (default empty set).",
+     "attack_vector": "Craft a JWS token with a 'crit' header listing an unknown extension (e.g., 'x-custom-policy'). When passed to jwt.decode(), PyJWT will accept the token instead of raising InvalidTokenError, violating RFC 7515 \u00a74.1.11.",
+     "public_exploit": true,
+     "fix_notes": "Add _SUPPORTED_CRIT set containing extensions PyJWT understands (e.g., {'b64'}) and validate crit headers in _validate_headers() or decode(), raising InvalidTokenError for unrecognized extensions per RFC 7515 \u00a74.1.11.",
+     "sources": [
+      "https://github.com/jpadilla/pyjwt/security/advisories/GHSA-752w-5fwx-jx9f"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-752w-5fwx-jx9f",
+     "verdict": "reachable",
+     "confidence": 0.95,
+     "rationale": "The code calls jwt.decode on user\u2011supplied tokens from the Authorization header (statuspage/auth.py:16). If an attacker crafts a JWS with a 'crit' header containing an unknown extension, PyJWT 1.7.1 will accept it instead of raising InvalidTokenError, triggering the vulnerability.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:16"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "PYSEC-2025-183",
+    "aliases": [
+     "CVE-2025-45768"
+    ],
+    "severity": "HIGH",
+    "summary": "pyjwt v2.10.1 was discovered to contain weak encryption.",
+    "min_fix": "2.14.0",
+    "priority": "fix-now",
+    "intel": {
+     "vuln_id": "PYSEC-2025-183",
+     "vulnerable_symbols": [
+      "jwt.encode",
+      "jwt.decode"
+     ],
+     "trigger_conditions": "Use of pyjwt v2.10.1 with default encryption settings (key length chosen by application, no minimum enforced by library).",
+     "attack_vector": "Application calls jwt.encode or jwt.decode with a weak key (short length) allowing decryption or forgery of tokens.",
+     "public_exploit": null,
+     "fix_notes": "Upgrade to pyjwt v2.10.2+ which enforces minimum key length and provides opt-in strict enforcement.",
+     "sources": [
+      "https://github.com/jpadilla/pyjwt/security/advisories/GHSA-xxxx-xxxx-xxxx"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "PYSEC-2025-183",
+     "verdict": "reachable",
+     "confidence": 0.95,
+     "rationale": "The codebase directly imports pyjwt and calls jwt.encode and jwt.decode with a hard-coded short secret ('change-me'), which satisfies the attack condition of using a weak key allowing token forgery or decryption.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:11",
+      "statuspage/auth.py:16"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-gm62-xv2j-4w53",
+    "aliases": [
+     "CVE-2025-66418",
+     "PYSEC-2026-1998"
+    ],
+    "severity": "HIGH",
+    "summary": "urllib3 allows an unbounded number of links in the decompression chain",
+    "min_fix": "2.8.0",
+    "priority": "fix-now",
+    "intel": {
+     "vuln_id": "GHSA-gm62-xv2j-4w53",
+     "vulnerable_symbols": [
+      "urllib3.PoolManager.request",
+      "urllib3.HTTPConnectionPool.urlopen"
+     ],
+     "trigger_conditions": "Applications using urllib3 1.26.4 (or any version <= 2.5.0) that make HTTP requests to untrusted servers without explicitly disabling content decoding. The vulnerability is triggered when the server sends a response with a Content-Encoding header containing a chained sequence of compression algorithms (e.g., 'gzip, zstd').",
+     "attack_vector": "Remote code execution via crafted HTTP response from a malicious server. The attacker exploits the unbounded decompression chain by sending a response with many nested encoding steps, causing the client to allocate excessive CPU and memory during decompression.",
+     "public_exploit": null,
+     "fix_notes": "Upgrade to urllib3 v2.6.0 or later, which limits the number of links in the decompression chain to 5. Alternatively, use preload_content=False and validate the number of encodings in resp.headers['content-encoding'] before reading response content.",
+     "sources": [
+      "https://github.com/advisories/GHSA-gm62-xv2j-4w53",
+      "https://urllib3.readthedocs.io/en/2.5.0/advanced-usage.html#streaming-and-i-o"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-gm62-xv2j-4w53",
+     "verdict": "reachable",
+     "confidence": 0.9,
+     "rationale": "The code uses requests.get (statuspage/checks.py:7) which internally calls urllib3's PoolManager.request/HTTPConnectionPool.urlopen without disabling content decoding. A malicious server can send a chained Content-Encoding header (e.g., 'gzip, zstd') triggering unbounded decompression, leading to DoS/RCE.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-q2q7-5pp4-w6pg",
+    "aliases": [
+     "CVE-2021-33503",
+     "PYSEC-2021-108"
+    ],
+    "severity": "HIGH",
+    "summary": "Catastrophic backtracking in URL authority parser when passed URL containing many @ characters",
+    "min_fix": "2.8.0",
+    "priority": "fix-now",
+    "intel": {
+     "vuln_id": "GHSA-q2q7-5pp4-w6pg",
+     "vulnerable_symbols": [
+      "urllib3.util.url.parse_url",
+      "urllib3.util.url.parse_url2"
+     ],
+     "trigger_conditions": "URL containing many @ characters in the authority component",
+     "attack_vector": "Passing a specially crafted URL as a parameter or following an HTTP redirect containing many @ characters",
+     "public_exploit": true,
+     "fix_notes": "Fixed in urllib3 v1.26.5 by updating the authority regex to prevent catastrophic backtracking.",
+     "sources": [
+      "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-33503",
+      "https://github.com/urllib3/urllib3/releases/tag/1.26.5"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-q2q7-5pp4-w6pg",
+     "verdict": "reachable",
+     "confidence": 0.9,
+     "rationale": "The code imports requests and calls requests.get with a user\u2011supplied url parameter. Requests uses urllib3 internally, invoking urllib3.util.url.parse_url/parse_url2 on the URL (including redirects). No sanitization is shown, so a URL containing many '@' characters can reach the vulnerable code.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:2",
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-vxq7-64xx-v4gw",
+    "aliases": [
+     "CVE-2026-97689",
+     "PYSEC-2026-4177"
+    ],
+    "severity": "HIGH",
+    "summary": "urllib3: HTTPResponse.stream()/read_chunked() buffers an unbounded chunk-size line into memory",
+    "min_fix": "2.8.0",
+    "priority": "fix-now",
+    "intel": {
+     "vuln_id": "GHSA-vxq7-64xx-v4gw",
+     "vulnerable_symbols": [
+      "urllib3.response.BaseHTTPResponse.read_chunked",
+      "urllib3.response.BaseHTTPResponse.stream",
+      "urllib3.request.RequestMethods.request",
+      "urllib3.request.RequestMethods.get",
+      "urllib3.request.RequestMethods.head",
+      "urllib3.request.RequestMethods.post",
+      "urllib3.request.RequestMethods.put",
+      "urllib3.request.RequestMethods.delete",
+      "urllib3.request.RequestMethods.patch",
+      "urllib3.request.RequestMethods.options",
+      "urllib3.request.RequestMethods.head"
+     ],
+     "trigger_conditions": "urllib3 1.26.4 is used to stream a chunked-transfer-encoded HTTP response from an untrusted source. The vulnerability is triggered when the server sends a very long run of bytes without a newline character after the chunk size field, causing the client to buffer the entire run before rejecting the invalid chunk size.",
+     "attack_vector": "A malicious HTTP server initiates a chunked transfer encoding and sends a large chunk size field without a terminating newline. The urllib3 streaming client buffers this unbounded data into memory before validation occurs.",
+     "public_exploit": null,
+     "fix_notes": "Upgrade to urllib3 version 2.8.0 or later, which rejects chunk-size fields larger than 65536 bytes. As a workaround, use the read() method instead of streaming APIs to read the entire response at once.",
+     "sources": [
+      "https://urllib3.readthedocs.io/en/stable/reference/urllib3.response.html#urllib3.response.BaseHTTPResponse.read_chunked",
+      "https://urllib3.readthedocs.io/en/stable/reference/urllib3.response.html#urllib3.response.BaseHTTPResponse.stream",
+      "https://urllib3.readthedocs.io/en/2.7.0/advanced-usage.html#streaming-and-i-o",
+      "https://httpwg.org/specs/rfc9112.html#chunked.encoding"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-vxq7-64xx-v4gw",
+     "verdict": "reachable",
+     "confidence": 0.95,
+     "rationale": "The code calls requests.get (statuspage/checks.py:7), which uses urllib3 to download and read the HTTP response body, including chunked transfer encoding; a malicious server could trigger the vulnerability.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-hxm8-2xgr-2p9m",
+    "aliases": [
+     "CVE-2026-102269",
+     "PYSEC-2026-4147"
+    ],
+    "severity": "MODERATE",
+    "summary": "PyJWT: Non-canonical signature segments enable raw-token revocation bypass",
+    "min_fix": "2.14.0",
+    "priority": "fix-now",
+    "intel": {
+     "vuln_id": "GHSA-hxm8-2xgr-2p9m",
+     "vulnerable_symbols": [
+      "pyjwt.decode",
+      "pyjwt.encode",
+      "jwt.encode",
+      "jwt.decode"
+     ],
+     "trigger_conditions": "Appending non-Base64URL characters (e.g., '!!!!') to the signature segment of a valid compact JWS token. The token must be verified using default settings without a jti-indexed revocation check.",
+     "attack_vector": "Client sends a valid JWT token. Attacker appends '!!!!' to only the signature segment of the compact serialization. The server verifies the token, which succeeds because PyJWT normalizes the signature segment, but the raw serialized token hash differs from the logged-out value, allowing replay bypass.",
+     "public_exploit": true,
+     "fix_notes": "Reject signature segments containing characters outside [A-Za-z0-9_-]. Reject padding and non-canonical Base64URL encodings for compact JWS. Add regression tests. Document that applications must use semantic identifiers like jti for revocation, not raw serialized token strings.",
+     "sources": [
+      "https://github.com/jpadilla/pyjwt/security/advisories/GHSA-hxm8-2xgr-2p9m"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-hxm8-2xgr-2p9m",
+     "verdict": "reachable",
+     "confidence": 0.95,
+     "rationale": "The code directly calls jwt.decode on user\u2011supplied tokens from the Authorization header (statuspage/auth.py:16) using default verification settings (algorithms list, no extra options). This matches the attack scenario where appending non\u2011Base64URL characters to the signature segment passes verification, making the vulnerability reachable.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:16"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-ffc3-869f-jxw9",
+    "aliases": [
+     "CVE-2026-102268",
+     "PYSEC-2026-4145"
+    ],
+    "severity": "CRITICAL",
+    "summary": "PyJWT: Asymmetric-PEM detection bypass: whitespace/line-ending-mutated public keys skip the HS/asymmetric confusion guard",
+    "min_fix": "2.14.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-ffc3-869f-jxw9",
+     "vulnerable_symbols": [
+      "jwt.decode",
+      "jwt.algorithms.HMACAlgorithm.prepare_key",
+      "jwt.utils.is_pem_format",
+      "jwt.utils._PEM_RE"
+     ],
+     "trigger_conditions": "jwt.decode called with algorithms list mixing HMAC and asymmetric algorithms (e.g. [\"ES256\", \"HS256\"]) AND verification key passed as raw PEM text/bytes on non-PyJWK path in a byte-form that cryptography's loader accepts but is_pem_format regex does not recognize (marker-adjacent whitespace/indentation, CR-only line terminators, or PEM folded to a single line).",
+     "attack_vector": "Attacker supplies a PEM public key with marker-adjacent whitespace, CR-only line terminators, or folded to a single line. The key is loaded as an asymmetric key by cryptography but bypasses the HMAC guard in HMACAlgorithm.prepare_key because is_pem_format returns False. The PEM text is then used as the HMAC secret, allowing universal forgery of HS256 tokens.",
+     "public_exploit": true,
+     "fix_notes": "The is_pem_format function's regex must be updated to recognize PEM forms that cryptography's loader accepts, including marker-adjacent whitespace, CR-only line terminators, and single-line folded PEM. The guard in HMACAlgorithm.prepare_key must also be hardened to check the actual parsed key type rather than relying solely on the regex.",
+     "sources": [
+      "https://github.com/jpadilla/pyjwt/security/advisories/GHSA-ffc3-869f-jxw9"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-ffc3-869f-jxw9",
+     "verdict": "not_reachable",
+     "confidence": 1.0,
+     "rationale": "The code calls jwt.decode only with algorithms=[\"HS256\"] and a plain string secret (SECRET), not a PEM key. The vulnerability requires a mixed HMAC/asymmetric algorithm list and a PEM key with specific formatting that bypasses is_pem_format; neither condition is met.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:5",
+      "statuspage/auth.py:16"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-9v7f-9g4p-ffgj",
+    "aliases": [
+     "CVE-2026-102267",
+     "PYSEC-2026-4144"
+    ],
+    "severity": "HIGH",
+    "summary": "PyJWT: PyJWKClient follows redirects when fetching JWKS",
+    "min_fix": "2.14.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-9v7f-9g4p-ffgj",
+     "vulnerable_symbols": [
+      "PyJWKClient"
+     ],
+     "trigger_conditions": "PyJWKClient is configured with a JWKS endpoint URL and caller-supplied request headers. The vulnerability is triggered when an attacker can influence the response of the configured JWKS endpoint, causing it to issue an HTTP redirect to a different host. The redirect is followed without validating the destination, allowing header leakage and response body poisoning.",
+     "attack_vector": "Remote. Attacker influences the JWKS endpoint response to issue a redirect. The victim application's PyJWKClient follows the redirect, sending authenticated headers to the attacker-controlled host and receiving attacker-controlled JWKS data.",
+     "public_exploit": null,
+     "fix_notes": "PyJWKClient now disables automatic redirects for JWKS fetches. The fix prevents following redirects when fetching JWKS data, mitigating the redirect-following and header-leak issue.",
+     "sources": [
+      "https://github.com/jpadilla/pyjwt/commit/0a795b8e1f6ef08f634aa7086fc41cc6d5ce3e56",
+      "https://github.com/jpadilla/pyjwt/security/advisories/GHSA-9v7f-9g4p-ffgj"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-9v7f-9g4p-ffgj",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code imports jwt but only uses jwt.encode and jwt.decode with HS256; PyJWKClient is never instantiated or called, so the vulnerable feature is not exercised.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-ffqj-6fqr-9h24",
+    "aliases": [
+     "CVE-2022-29217",
+     "PYSEC-2022-202"
+    ],
+    "severity": "HIGH",
+    "summary": "Key confusion through non-blocklisted public key formats",
+    "min_fix": "2.14.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-ffqj-6fqr-9h24",
+     "vulnerable_symbols": [
+      "jwt.encode with algorithm=\"HS256\"",
+      "jwt.decode with algorithms=jwt.algorithms.get_default_algorithms()",
+      "jwt.algorithms.get_default_algorithms()"
+     ],
+     "trigger_conditions": "When jwt.decode is called with the default algorithms list (which includes HS256) and a public key (e.g., SSH-format ed25519 or RSA key) is provided as the HMAC secret key.",
+     "attack_vector": "An attacker crafts a JWT token signed with EdDSA (or another asymmetric algorithm) using a public key. The attacker then presents this token to a victim system that decodes JWTs using jwt.decode with default algorithms. The victim's decoder attempts to verify the token using HS256 (HMAC) with the same public key as the secret, successfully verifying the token due to key confusion.",
+     "public_exploit": true,
+     "fix_notes": "PyJWT 2.0.0 introduced explicit support for ed25519 and added checks to prevent public keys starting with 'ssh-' from being used with HMAC algorithms. Users should upgrade to PyJWT 2.0.0 or later. If upgrading is not possible, explicitly specify only the desired algorithms (e.g., algorithms=['HS256']) in jwt.decode instead of using get_default_algorithms().",
+     "sources": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2022-29217",
+      "https://github.com/jpadilla/pyjwt/security/advisories/GHSA-ffqj-6fqr-9h24"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-ffqj-6fqr-9h24",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The decode call uses an explicit algorithms list [\"HS256\"] rather than the default list, and the secret key is a static string \"change-me\", not a public key. Thus the vulnerable condition (default algorithms + public key as HMAC secret) is not met.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 7,
+       "snippet": "   5| import jwt\n   6| \n   7| SECRET = \"change-me\"\n   8| \n   9| ",
+       "kind": "cited"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:16",
+      "statuspage/auth.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-xgmm-8j9v-c9wx",
+    "aliases": [
+     "CVE-2026-48526",
+     "PYSEC-2026-179"
+    ],
+    "severity": "HIGH",
+    "summary": "PyJWT: Public-key JWK accepted as HMAC secret enables forged HS256 tokens when mixed families are allowed",
+    "min_fix": "2.14.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-xgmm-8j9v-c9wx",
+     "vulnerable_symbols": [
+      "jwt.api_jws.PyJWS.decode",
+      "jwt.api_jws.PyJWS.encode",
+      "jwt.algorithms.HMACAlgorithm.prepare_key"
+     ],
+     "trigger_conditions": "verifier configured with both symmetric and asymmetric algorithms in algorithms=[...] AND passes a raw-JSON JWK as the key= argument",
+     "attack_vector": "JWT algorithm confusion: attacker sets alg=HS256 in token header, verifier uses public-key JWK as HMAC secret, allowing forgery of HS256 tokens",
+     "public_exploit": true,
+     "fix_notes": "The HMACAlgorithm.prepare_key method currently only blocks PEM and SSH key formats but allows JSON Web Keys to pass through. A fix should add JSON Web Key format detection to reject public keys used as HMAC secrets, consistent with documented usage patterns.",
+     "sources": [
+      "https://github.com/jpadilla/pyjwt/security/advisories/GHSA-xgmm-8j9v-c9wx"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-xgmm-8j9v-c9wx",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The verifier uses only HS256 algorithm and a string secret, not a raw-JSON JWK, and does not mix symmetric and asymmetric algorithms, so the confusion condition is not met.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:11",
+      "statuspage/auth.py:16"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-2xpw-w6gg-jr37",
+    "aliases": [
+     "CVE-2025-66471",
+     "PYSEC-2026-1994"
+    ],
+    "severity": "HIGH",
+    "summary": "urllib3 streaming API improperly handles highly compressed data",
+    "min_fix": "2.8.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-2xpw-w6gg-jr37",
+     "vulnerable_symbols": [
+      "urllib3.HTTPResponse.stream",
+      "urllib3.HTTPResponse.read",
+      "urllib3.HTTPResponse.read1",
+      "urllib3.HTTPResponse.read_chunked",
+      "urllib3.HTTPResponse.readinto"
+     ],
+     "trigger_conditions": "Streaming a compressed HTTP response (Content-Encoding: gzip, deflate, br, or zstd) where the compressed data ratio causes full decompression of a small amount of input, exceeding the requested chunk size and allocating excessive memory/CPU on the client side.",
+     "attack_vector": "Client-side: attacker sends a specially crafted HTTP response with highly compressed content to a victim application using urllib3's streaming API to read the response body.",
+     "public_exploit": null,
+     "fix_notes": "Upgrade to urllib3 >= 2.6.0. The patched version avoids decompressing data that exceeds the requested amount. Also upgrade Brotli/brotlicffi if using brotli encoding via the urllib3[brotli] extra.",
+     "sources": [
+      "https://urllib3.readthedocs.io/en/2.5.0/advanced-usage.html#streaming-and-i-o",
+      "https://github.com/advisories/GHSA-2xpw-w6gg-jr37"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-2xpw-w6gg-jr37",
+     "verdict": "not_reachable",
+     "confidence": 0.9,
+     "rationale": "The code uses requests.get without streaming; it downloads the full response body, not invoking urllib3's streaming API (HTTPResponse.stream, read, read1, read_chunked, readinto) in a way that exceeds a small requested chunk size. Therefore the decompression bomb condition is not triggered.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-38jv-5279-wg99",
+    "aliases": [
+     "CVE-2026-21441",
+     "PYSEC-2026-1996"
+    ],
+    "severity": "HIGH",
+    "summary": "Decompression-bomb safeguards bypassed when following HTTP redirects (streaming API)",
+    "min_fix": "2.8.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-38jv-5279-wg99",
+     "vulnerable_symbols": [
+      "urllib3.PoolManager.request",
+      "urllib3.HTTPConnectionPool.urlopen",
+      "urllib3.response.decode"
+     ],
+     "trigger_conditions": "streaming API usage with preload_content=False and redirect following enabled (default) to untrusted sources",
+     "attack_vector": "HTTP redirect chain from malicious server triggers full decompression of response body before any read() call, bypassing configured read limits",
+     "public_exploit": null,
+     "fix_notes": "Upgrade to urllib3 >= 2.6.3 which skips content decoding for redirect responses when preload_content=False",
+     "sources": [
+      "https://github.com/advisories/GHSA-38jv-5279-wg99",
+      "https://urllib3.readthedocs.io/en/2.6.2/advanced-usage.html#streaming-and-i-o"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-38jv-5279-wg99",
+     "verdict": "not_reachable",
+     "confidence": 0.9,
+     "rationale": "The code uses requests.get without stream=True, which causes urllib3 to use preload_content=True (non\u2011streaming). The vulnerability requires streaming API usage with preload_content=False and redirect following enabled. Since the condition is not met, the flaw cannot be triggered.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:2",
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-8988-9cw3-xx77",
+    "aliases": [
+     "CVE-2026-97687",
+     "PYSEC-2026-4175"
+    ],
+    "severity": "HIGH",
+    "summary": "urllib3: HTTPS proxy TLS configuration may be ignored or overridden",
+    "min_fix": "2.8.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-8988-9cw3-xx77",
+     "vulnerable_symbols": [
+      "urllib3.ProxyManager",
+      "urllib3.HTTPConnectionPool.urlopen",
+      "urllib3.util.ssl_.create_urllib3_context",
+      "urllib3.util.ssl_.DEFAULT_CIPHERS"
+     ],
+     "trigger_conditions": "HTTPS requests forwarded through an HTTPS proxy with use_forwarding_for_https=True, and proxy_ssl_context is configured for the proxy. Additionally, configuring cert_reqs=\"CERT_NONE\" for a target server can overwrite the verify_mode of the SSL context configured for the HTTPS proxy in place, persisting the modification on the context object.",
+     "attack_vector": "An attacker able to intercept the connection to an HTTPS proxy may be able to impersonate the proxy when the effective proxy TLS configuration disables certificate verification or otherwise accepts the attacker's certificate. This may occur when the target server's trust or identity policy is incorrectly applied to the proxy connection.",
+     "public_exploit": null,
+     "fix_notes": "urllib3 2.7.1 and later properly separates proxy and target TLS configurations. The proxy_ssl_context is no longer overridden by the target server's ssl_context.",
+     "sources": [
+      "https://github.com/advisories/GHSA-8988-9cw3-xx77"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-8988-9cw3-xx77",
+     "verdict": "not_reachable",
+     "confidence": 0.9,
+     "rationale": "The code calls requests.get without specifying proxies or verify=False, so it does not forward HTTPS requests through an HTTPS proxy with use_forwarding_for_https=True nor set cert_reqs='CERT_NONE' for the target. Therefore the vulnerable conditions are not satisfied.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-qccp-gfcp-xxvc",
+    "aliases": [
+     "CVE-2026-44431",
+     "PYSEC-2026-141"
+    ],
+    "severity": "HIGH",
+    "summary": "urllib3: Sensitive headers forwarded across origins in proxied low-level redirects",
+    "min_fix": "2.8.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-qccp-gfcp-xxvc",
+     "vulnerable_symbols": [
+      "ProxyManager.connection_from_url",
+      "HTTPConnection.urlopen",
+      "assert_same_host=False"
+     ],
+     "trigger_conditions": "Cross-origin redirect followed via low-level API with assert_same_host=False while using ProxyManager.connection_from_url()",
+     "attack_vector": "Man-in-the-middle or server-controlled redirect that changes origin during proxy-chained request",
+     "public_exploit": null,
+     "fix_notes": "Upgrade to urllib3 >= 2.7.0 which strips sensitive headers (Authorization, Cookie, Proxy-Authorization) from cross-origin redirects in HTTPConnection.urlopen. Alternatively, avoid low-level redirect flow and use ProxyManager.request() which strips headers by default.",
+     "sources": [
+      "https://github.com/advisories/GHSA-qccp-gfcp-xxvc",
+      "https://urllib3.readthedocs.io/"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-qccp-gfcp-xxvc",
+     "verdict": "not_reachable",
+     "confidence": 0.85,
+     "rationale": "The code only uses requests.get, which internally uses urllib3 but does not expose or invoke ProxyManager.connection_from_url with assert_same_host=False. No evidence shows the vulnerable pattern is present.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:2",
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-v845-jxx5-vc9f",
+    "aliases": [
+     "CVE-2023-43804",
+     "PYSEC-2023-192"
+    ],
+    "severity": "HIGH",
+    "summary": "`Cookie` HTTP header isn't stripped on cross-origin redirects",
+    "min_fix": "2.8.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-v845-jxx5-vc9f",
+     "vulnerable_symbols": [
+      "urllib3.util.url.parse_url",
+      "urllib3.connectionpool.HTTPConnectionPool.urlopen",
+      "urllib3.request.RequestMethods.request"
+     ],
+     "trigger_conditions": "Using urllib3 1.26.4 with Cookie header on requests, not disabling HTTP redirects (redirects=True default), and either not using HTTPS or redirecting to a malicious origin server.",
+     "attack_vector": "Client-side request forgery via cross-origin redirect with Cookie header leakage.",
+     "public_exploit": false,
+     "fix_notes": "Upgrade to urllib3 >= 1.26.17 or >= 2.0.6. Disable redirects via redirects=False. Avoid using Cookie header for non-browser contexts.",
+     "sources": [
+      "https://github.com/advisories/GHSA-v845-jxx5-vc9f",
+      "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-43804"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-v845-jxx5-vc9f",
+     "verdict": "not_reachable",
+     "confidence": 0.9,
+     "rationale": "The code uses requests.get with default redirect following, but there is no evidence that any Cookie header is ever sent (no cookie jar or manual cookies). The vulnerability requires a Cookie header to be present for exploitation, so the flaw cannot be triggered.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:2",
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "jinja2",
+    "version": "2.11.2",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-cpwx-vrp4-4pq7",
+    "aliases": [
+     "CVE-2025-27516",
+     "PYSEC-2026-1471"
+    ],
+    "severity": "MODERATE",
+    "summary": "Jinja2 vulnerable to sandbox breakout through attr filter selecting format method",
+    "min_fix": "3.1.6",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-cpwx-vrp4-4pq7",
+     "vulnerable_symbols": [
+      "jinja2.sandbox.SandboxedEnvironment.attr",
+      "jinja2.sandbox.SandboxedEnvironment.getattr"
+     ],
+     "trigger_conditions": "Template content is controlled by an attacker and the template uses the '|attr' filter to access an object's 'format' method.",
+     "attack_vector": "Template rendering via Jinja2's sandboxed environment with the '|attr' filter applied to a string-like object.",
+     "public_exploit": null,
+     "fix_notes": "The |attr filter has been restricted to no longer bypass the sandbox's attribute lookup, preventing access to the underlying 'format' method of strings.",
+     "sources": [
+      "https://github.com/advisories/GHSA-cpwx-vrp4-4pq7"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-cpwx-vrp4-4pq7",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code uses jinja2.Environment, not jinja2.sandbox.SandboxedEnvironment, and the template does not contain the '|attr' filter required to trigger the vulnerability. No SandboxedEnvironment or attr filter usage is present.",
+     "evidence": [
+      {
+       "file": "statuspage/render.py",
+       "line": 14,
+       "snippet": "  12| \n  13| \n  14| env = Environment(autoescape=True)\n  15| env.filters[\"badge\"] = status_badge\n  16| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 11,
+       "snippet": "   9|     color = STATUS_COLORS.get(status, \"#57606a\")\n  10|     label = ctx.get(\"labels\", {}).get(status, status)\n  11|     return Markup(f'<span class=\"badge\" style=\"background:{color}\">{Markup.escape(label)}</span>')\n  12| \n  13| ",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/render.py:14"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "jinja2",
+    "version": "2.11.2",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-g3rq-g295-4j3m",
+    "aliases": [
+     "CVE-2020-28493",
+     "PYSEC-2021-66",
+     "SNYK-PYTHON-JINJA2-1012994"
+    ],
+    "severity": "MODERATE",
+    "summary": "Regular Expression Denial of Service (ReDoS) in Jinja2",
+    "min_fix": "3.1.6",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-g3rq-g295-4j3m",
+     "vulnerable_symbols": [
+      "jinja2.urlize",
+      "jinja2.utils.Markup"
+     ],
+     "trigger_conditions": "urlize filter applied to user-controlled input containing regex backtracking patterns (e.g., long strings of alphanumeric characters separated by dots)",
+     "attack_vector": "Template rendering with user-controlled data using the urlize filter or Markup class",
+     "public_exploit": false,
+     "fix_notes": "Upgrade to jinja2 >= 2.11.3 which patched the regex in the urlize filter to prevent catastrophic backtracking",
+     "sources": [
+      "https://github.com/advisories/GHSA-g3rq-g295-4j3m"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-g3rq-g295-4j3m",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code imports jinja2 and uses Markup and a custom badge filter, but never applies the urlize filter to any input. The vulnerability requires urlize to be invoked on user\u2011controlled data containing regex backtracking patterns, which does not occur in the provided source.",
+     "evidence": [
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 11,
+       "snippet": "   9|     color = STATUS_COLORS.get(status, \"#57606a\")\n  10|     label = ctx.get(\"labels\", {}).get(status, status)\n  11|     return Markup(f'<span class=\"badge\" style=\"background:{color}\">{Markup.escape(label)}</span>')\n  12| \n  13| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 14,
+       "snippet": "  12| \n  13| \n  14| env = Environment(autoescape=True)\n  15| env.filters[\"badge\"] = status_badge\n  16| ",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/render.py:2",
+      "statuspage/render.py:11",
+      "statuspage/render.py:14"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "jinja2",
+    "version": "2.11.2",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-h5c8-rqwp-cp95",
+    "aliases": [
+     "CVE-2024-22195",
+     "PYSEC-2026-1473"
+    ],
+    "severity": "MODERATE",
+    "summary": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+    "min_fix": "3.1.6",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-h5c8-rqwp-cp95",
+     "vulnerable_symbols": [
+      "xmlattr filter"
+     ],
+     "trigger_conditions": "xmlattr filter is used with keys containing spaces; keys are derived from user input and rendered in output that other users view; application accepts keys as user input (not just values)",
+     "attack_vector": "XSS via HTML attribute injection when user-controlled keys with spaces are passed to the xmlattr filter",
+     "public_exploit": null,
+     "fix_notes": "Upgrade to Jinja2 3.1.3 or later. The xmlattr filter now validates keys and raises an error if a key contains spaces, preventing attribute injection.",
+     "sources": [
+      "https://github.com/advisories/GHSA-h5c8-rqwp-cp95"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-h5c8-rqwp-cp95",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code defines a Jinja2 template string that does not use the xmlattr filter. No other Jinja templates are present, and there is no evidence of user\u2011controlled keys being passed to xmlattr.",
+     "evidence": [
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 14,
+       "snippet": "  12| \n  13| \n  14| env = Environment(autoescape=True)\n  15| env.filters[\"badge\"] = status_badge\n  16| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 11,
+       "snippet": "   9|     color = STATUS_COLORS.get(status, \"#57606a\")\n  10|     label = ctx.get(\"labels\", {}).get(status, status)\n  11|     return Markup(f'<span class=\"badge\" style=\"background:{color}\">{Markup.escape(label)}</span>')\n  12| \n  13| ",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [],
+     "group": [
+      "GHSA-h75v-3vvj-5mfj"
+     ],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "jinja2",
+    "version": "2.11.2",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-h75v-3vvj-5mfj",
+    "aliases": [
+     "CVE-2024-34064",
+     "PYSEC-2026-1474"
+    ],
+    "severity": "MODERATE",
+    "summary": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+    "min_fix": "3.1.6",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-h75v-3vvj-5mfj",
+     "vulnerable_symbols": [
+      "xmlattr filter with user-controlled keys"
+     ],
+     "trigger_conditions": "The `xmlattr` filter is used with keys derived from user input. Accepting keys as user input is considered an unintended use case. The vulnerability is triggered when the key contains characters like spaces, `/`, `>`, or `=` which are interpreted as starting new HTML attributes.",
+     "attack_vector": "An attacker injects a malicious string as a key argument to the `xmlattr` filter in a template rendered by a vulnerable Jinja2 application. The injected key contains characters that break out of the intended attribute context and inject additional HTML attributes.",
+     "public_exploit": null,
+     "fix_notes": "The fix restricts the `xmlattr` filter to reject keys containing characters that are not valid in HTML attribute names (spaces, `/`, `>`, `=`). Code that passes user-controlled keys to `xmlattr` should be updated to validate or sanitize the input, or switch to a safe alternative for rendering attributes.",
+     "sources": [
+      "https://github.com/advisories/GHSA-h75v-3vvj-5mfj"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-h75v-3vvj-5mfj",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code defines a Jinja2 template string that does not use the xmlattr filter. No other Jinja templates are present, and there is no evidence of user\u2011controlled keys being passed to xmlattr.",
+     "evidence": [
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 14,
+       "snippet": "  12| \n  13| \n  14| env = Environment(autoescape=True)\n  15| env.filters[\"badge\"] = status_badge\n  16| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 11,
+       "snippet": "   9|     color = STATUS_COLORS.get(status, \"#57606a\")\n  10|     label = ctx.get(\"labels\", {}).get(status, status)\n  11|     return Markup(f'<span class=\"badge\" style=\"background:{color}\">{Markup.escape(label)}</span>')\n  12| \n  13| ",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [],
+     "group": [
+      "GHSA-h5c8-rqwp-cp95"
+     ],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "jinja2",
+    "version": "2.11.2",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-q2x7-8rv6-6q7h",
+    "aliases": [
+     "CVE-2024-56326",
+     "PYSEC-2026-1475"
+    ],
+    "severity": "MODERATE",
+    "summary": "Jinja has a sandbox breakout through indirect reference to format method",
+    "min_fix": "3.1.6",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-q2x7-8rv6-6q7h",
+     "vulnerable_symbols": [
+      "jinja2.sandbox.SandboxedEnvironment",
+      "jinja2.sandbox.SandboxedEnvironment.call_filter",
+      "jinja2.sandbox.SandboxedEnvironment._safe_format",
+      "jinja2.sandbox.SandboxedEnvironment._call_method"
+     ],
+     "trigger_conditions": "Attacker controls template content and a custom filter calls the format method on a string object obtained through indirect reference",
+     "attack_vector": "Template injection via untrusted template rendering in applications using Jinja's sandboxed environment with custom filters",
+     "public_exploit": null,
+     "fix_notes": "The Jinja sandbox now properly detects indirect references to str.format method calls. After the fix, storing a reference to a malicious string's format method and passing it to a filter that calls it is handled by the sandbox to prevent code execution.",
+     "sources": [
+      "https://github.com/advisories/GHSA-q2x7-8rv6-6q7h"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-q2x7-8rv6-6q7h",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code uses jinja2.Environment, not jinja2.sandbox.SandboxedEnvironment, and does not invoke the vulnerable methods (call_filter, _safe_format, _call_method). No sandboxed environment is present, so the attack vector requiring a custom filter calling format on a string via indirect reference cannot be triggered.",
+     "evidence": [
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 2,
+       "snippet": "   2| from jinja2 import Environment, Markup, contextfilter",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 14,
+       "snippet": "  12| \n  13| \n  14| env = Environment(autoescape=True)\n  15| env.filters[\"badge\"] = status_badge\n  16| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/render.py",
+       "line": 11,
+       "snippet": "   9|     color = STATUS_COLORS.get(status, \"#57606a\")\n  10|     label = ctx.get(\"labels\", {}).get(status, status)\n  11|     return Markup(f'<span class=\"badge\" style=\"background:{color}\">{Markup.escape(label)}</span>')\n  12| \n  13| ",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/render.py:2",
+      "statuspage/render.py:14"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-2gx3-rcp4-g85q",
+    "aliases": [
+     "CVE-2026-101917",
+     "PYSEC-2026-4140"
+    ],
+    "severity": "MODERATE",
+    "summary": "PyJWT: PyJWKClient still amplifies unauthenticated JWKS fetches on unknown kid values (incomplete fix of CVE-2026-48524)",
+    "min_fix": "2.14.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-2gx3-rcp4-g85q",
+     "vulnerable_symbols": [
+      "jwt.jwks_client.PyJWKClient.get_signing_key",
+      "jwt.jwks_client.PyJWKClient.get_signing_keys",
+      "jwt.jwks_client.PyJWKClient.fetch_data",
+      "jwt.jwks_client.PyJWKClient.jwk_set_cache"
+     ],
+     "trigger_conditions": "Any unauthenticated request with an unknown 'kid' in the JWT header triggers get_signing_key(). This calls get_signing_keys(refresh=True), which bypasses jwk_set_cache unconditionally and forces a fresh fetch_data() call. The kid is derived from the unverified token header (decode with verify_signature=False). lru_cache does not cache raised exceptions, so repeated calls for the same unknown kid re-fetch on every invocation.",
+     "attack_vector": "Unauthenticated HTTP request to the application with a JWT containing a attacker-controlled 'kid' value. The application calls PyJWKClient.get_signing_key() to resolve the signing key, which triggers an unbounded fetch of the JWKS endpoint.",
+     "public_exploit": true,
+     "fix_notes": "Implement negative-caching or a minimum-refresh-interval for unknown kids. The forced refresh on unknown kids should respect the jwk_set_cache or add a short TTL cache for failed lookups to prevent repeated fetches. Rate-limiting or a negative-cache with a short TTL would mitigate the amplification.",
+     "sources": [
+      "https://github.com PyJWKClient unbounded JWKS endpoint requests via attacker-controlled kid values (DoS)",
+      "https://github.com PyJWKClient still amplifies unauthenticated JWKS fetches on unknown kid values (incomplete fix of CVE-2026-48524)"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-2gx3-rcp4-g85q",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The codebase only uses jwt.encode and jwt.decode for HS256 signing/verification. It never imports or calls PyJWKClient or any of its methods (get_signing_key, get_signing_keys, fetch_data, jwk_set_cache). Therefore the vulnerable feature is not invoked.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:5",
+      "statuspage/auth.py:11",
+      "statuspage/auth.py:16"
+     ],
+     "group": [
+      "PYSEC-2026-177"
+     ],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-jwrc-g2q2-pq5p",
+    "aliases": [
+     "CVE-2026-102270",
+     "PYSEC-2026-4148"
+    ],
+    "severity": "MODERATE",
+    "summary": "PyJWT: ReDoS vulnerability when calling the `is_pem_format` function.",
+    "min_fix": "2.14.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-jwrc-g2q2-pq5p",
+     "vulnerable_symbols": [
+      "_PEM_RE.search",
+      "is_pem_format"
+     ],
+     "trigger_conditions": "Input consists of repeated '-----BEGIN CERTIFICATE-----' lines without a corresponding '-----END CERTIFICATE-----' line, causing catastrophic backtracking in the regex.",
+     "attack_vector": "An attacker provides attacker-controlled bytes as a key or certificate to PyJWT's key preparation, triggering the `is_pem_format` function.",
+     "public_exploit": true,
+     "fix_notes": "The fix replaces the backtracking PEM regex with a bounded marker scan (commit 8b4e233a22206b34ec1186e912e75c0b2396ac07). The fix is on master but not yet shipped in a released PyJWT version at the time of the advisory.",
+     "sources": [
+      "https://github.com/psf/pyjwt/security/advisories/GHSA-jwrc-g2q2-pq5p"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-jwrc-g2q2-pq5p",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code only uses PyJWT for HS256 signing/verification with a hardcoded secret; it never passes attacker\u2011controlled bytes as a key or certificate to PyJWT's key preparation functions (_PEM_RE.search, is_pem_format). Therefore the vulnerable regex is not exercised.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 7,
+       "snippet": "   5| import jwt\n   6| \n   7| SECRET = \"change-me\"\n   8| \n   9| ",
+       "kind": "cited"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:5",
+      "statuspage/auth.py:7",
+      "statuspage/auth.py:11",
+      "statuspage/auth.py:16"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "PYSEC-2026-175",
+    "aliases": [
+     "CVE-2026-48522",
+     "GHSA-993g-76c3-p5m4"
+    ],
+    "severity": "MEDIUM",
+    "summary": "PyJWT is a JSON Web Token implementation in Python.",
+    "min_fix": "2.14.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "PYSEC-2026-175",
+     "vulnerable_symbols": [
+      "PyJWKClient"
+     ],
+     "trigger_conditions": "application's jku URL ingestion path accepts attacker-influenced URLs (e.g., from JWT header, configuration file, OAuth flow parameter)",
+     "attack_vector": "SSRF via file://, FTP, or data-URI schemes; token forgery via crafted jku URL",
+     "public_exploit": null,
+     "fix_notes": "Fixed in PyJWT 2.13.0 by restricting URI schemes to http/https only",
+     "sources": [
+      "https://github.com/jpadilla/pyjwt/security/advisories/GHSA-993g-76c3-p5m4"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "PYSEC-2026-175",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code imports jwt but only uses jwt.encode and jwt.decode with a static secret; there is no usage of PyJWKClient or any JKU URL ingestion, so the vulnerable feature is not exercised.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:5",
+      "statuspage/auth.py:11",
+      "statuspage/auth.py:16"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "requests",
+    "version": "2.25.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-9hjg-9r4m-mvj7",
+    "aliases": [
+     "CVE-2024-47081",
+     "PYSEC-2026-1872"
+    ],
+    "severity": "MODERATE",
+    "summary": "Requests vulnerable to .netrc credentials leak via malicious URLs",
+    "min_fix": "2.33.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-9hjg-9r4m-mvj7",
+     "vulnerable_symbols": [
+      "requests.Session.trust_env",
+      "requests.Session"
+     ],
+     "trigger_conditions": "A user sends a request to a malicious URL that triggers URL parsing logic, causing the library to read and transmit .netrc credentials to the attacker-controlled host.",
+     "attack_vector": "HTTP/HTTPS request to a crafted URL",
+     "public_exploit": true,
+     "fix_notes": "Upgraded to Requests 2.32.4 or later, which fixes the URL parsing logic to prevent credential leakage.",
+     "sources": [
+      "https://github.com/psf/requests/pull/6965",
+      "https://seclists.org/fulldisclosure/2025/Jun/2"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-9hjg-9r4m-mvj7",
+     "verdict": "not_reachable",
+     "confidence": 0.7,
+     "rationale": "The code calls requests.get (statuspage/checks.py:7) which could leak .netrc credentials if a malicious URL is supplied, but there is no evidence that the url parameter originates from untrusted/user input; without such a precondition the vulnerability cannot be triggered.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "requests",
+    "version": "2.25.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-9wx4-h78v-vm56",
+    "aliases": [
+     "CVE-2024-35195",
+     "PYSEC-2026-1873"
+    ],
+    "severity": "MODERATE",
+    "summary": "Requests `Session` object does not verify requests after making first request with verify=False",
+    "min_fix": "2.33.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-9wx4-h78v-vm56",
+     "vulnerable_symbols": [
+      "requests.Session",
+      "requests.Session.request",
+      "requests.adapters.HTTPAdapter"
+     ],
+     "trigger_conditions": "First request to an origin made with verify=False, followed by subsequent requests to the same origin with verify=True (or default behavior). Connection pooling reuses the TLS context from the initial request.",
+     "attack_vector": "Client-side. Attacker controls a server with a self-signed or invalid TLS certificate. Victim's Session makes an initial request with verify=False to the attacker's server. The invalid TLS context is cached. Victim then makes a legitimate request to a different (or same) server with verify=True. The cached context bypasses verification, allowing MITM.",
+     "public_exploit": false,
+     "fix_notes": "Fixed in requests 2.32.0 by clearing/refreshing the connection pool / TLS context when verify setting changes, ensuring each request uses the explicitly specified verification mode.",
+     "sources": [
+      "https://github.com/advisories/GHSA-9wx4-h78v-vm56"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-9wx4-h78v-vm56",
+     "verdict": "not_reachable",
+     "confidence": 0.9,
+     "rationale": "The code uses requests.get which creates a new Session per call (via sessions.Session() context manager) and closes it after the request, so TLS context is not pooled across separate requests. The vulnerability requires reuse of the same Session object across a verify=False then verify=True request, which does not occur.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:2",
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "requests",
+    "version": "2.25.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-gc5v-m9x4-r6x2",
+    "aliases": [
+     "CVE-2026-25645",
+     "PYSEC-2026-2275"
+    ],
+    "severity": "MODERATE",
+    "summary": "Requests has Insecure Temp File Reuse in its extract_zipped_paths() utility function",
+    "min_fix": "2.33.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-gc5v-m9x4-r6x2",
+     "vulnerable_symbols": [
+      "requests.utils.extract_zipped_paths()"
+     ],
+     "trigger_conditions": "Calling requests.utils.extract_zipped_paths() with a zip archive containing files that would be extracted to a predictable path in the system temporary directory. The target file must already exist in the temp directory prior to extraction.",
+     "attack_vector": "Local attacker with write access to the system temporary directory pre-creates a malicious file with the same predictable name that extract_zipped_paths() will reuse instead of the legitimate file.",
+     "public_exploit": null,
+     "fix_notes": "Upgrade to Requests 2.33.0 or later, which extracts files to a non-deterministic location. As a workaround, set TMPDIR to a directory with restricted write access.",
+     "sources": [
+      "https://github.com/advisories/GHSA-gc5v-m9x4-r6x2"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-gc5v-m9x4-r6x2",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code only uses requests.get; there is no call to requests.utils.extract_zipped_paths anywhere in the provided evidence, and nothing indicates that requests.get internally invokes that function.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "requests",
+    "version": "2.25.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-j8r2-6x86-q33q",
+    "aliases": [
+     "CVE-2023-32681",
+     "PYSEC-2023-74"
+    ],
+    "severity": "MODERATE",
+    "summary": "Unintended leak of Proxy-Authorization header in requests",
+    "min_fix": "2.33.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-j8r2-6x86-q33q",
+     "vulnerable_symbols": [
+      "requests.sessions.Session.rebuild_proxies",
+      "requests.sessions.Session.send",
+      "requests.adapters.ProxyManager"
+     ],
+     "trigger_conditions": "Proxy-Authorization header leak occurs when: (1) a request uses proxy credentials in the URL (e.g., https://username:password@proxy:8080), (2) a redirect happens from HTTP to HTTPS or HTTPS to HTTPS, and (3) allow_redirects is True (default). The header is sent to the destination server during the CONNECT tunnel setup over HTTPS.",
+     "attack_vector": "Man-in-the-middle or malicious proxy server intercepts the Proxy-Authorization header forwarded to the final HTTPS destination during a redirect chain.",
+     "public_exploit": null,
+     "fix_notes": "Starting in Requests v2.31.0, the `rebuild_proxies` method no longer attaches the Proxy-Authorization header to redirects with an HTTPS destination. The proxy credentials are handled internally by urllib3's ProxyManager instead.",
+     "sources": [
+      "https://github.com/psf/requests/blob/f2629e9e3c7ce3c3c8c025bcd8db551101cbc773/requests/sessions.py#L319-L328",
+      "https://github.com/psf/requests/blob/f2629e9e3c7ce3c3c8c025bcd8db551101cbc773/requests/adapters.py#L199-L235"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-j8r2-6x86-q33q",
+     "verdict": "not_reachable",
+     "confidence": 0.9,
+     "rationale": "The code calls requests.get without specifying proxies or proxy credentials; there is no evidence that proxy credentials are present in the request URL or environment, so condition (1) for the vulnerability cannot be satisfied.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-34jh-p97f-mpxf",
+    "aliases": [
+     "CVE-2024-37891",
+     "PYSEC-2026-1995"
+    ],
+    "severity": "MODERATE",
+    "summary": "urllib3's Proxy-Authorization request header isn't stripped during cross-origin redirects",
+    "min_fix": "2.8.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-34jh-p97f-mpxf",
+     "vulnerable_symbols": [
+      "Proxy-Authorization header",
+      "ProxyManager"
+     ],
+     "trigger_conditions": "Setting the Proxy-Authorization header without using urllib3's built-in proxy support, not disabling HTTP redirects, and either not using an HTTPS origin server or for the proxy or target origin to redirect to a malicious origin",
+     "attack_vector": "Cross-origin redirect with Proxy-Authorization header sent to malicious origin",
+     "public_exploit": null,
+     "fix_notes": "urllib3 will automatically strip the Proxy-Authorization header during cross-origin redirects to avoid the small chance that users are doing this on accident. Users should use urllib3's proxy support or disable automatic redirects to achieve safe processing of the Proxy-Authorization header.",
+     "sources": [
+      "https://github.com/advisories/GHSA-34jh-p97f-mpxf"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-34jh-p97f-mpxf",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code uses requests.get without setting a Proxy-Authorization header or configuring proxies, so the vulnerable condition of manually setting Proxy-Authorization header while bypassing urllib3's proxy support is not present.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-g4mx-q9vg-27p4",
+    "aliases": [
+     "CVE-2023-45803",
+     "PYSEC-2023-212"
+    ],
+    "severity": "MODERATE",
+    "summary": "urllib3's request body not stripped after redirect from 303 status changes request method to GET",
+    "min_fix": "2.8.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-g4mx-q9vg-27p4",
+     "vulnerable_symbols": [
+      "urllib3.util.url.parse_url",
+      "urllib3.util.url.url_to_request",
+      "urllib3.connectionpool.HTTPConnectionPool.urlopen",
+      "urllib3.RedirectManager.redirect",
+      "urllib3.util.url.request_url"
+     ],
+     "trigger_conditions": "Submitting sensitive data (form data or JSON) in HTTP request body AND the origin service redirects with 303 status to a different host, causing the request method to change from POST/other-body-accepting method to GET while retaining the request body",
+     "attack_vector": "Man-in-the-middle or compromised server sends 303 redirect to malicious peer, retaining POST request body that gets sent as GET request",
+     "public_exploit": null,
+     "fix_notes": "Upgrade to urllib3 v1.26.18 or v2.0.7. Alternatively, set redirects=False and manually strip request body when handling 303 redirects, or avoid sending sensitive data in request bodies when redirects are possible.",
+     "sources": [
+      "https://github.com/advisories/GHSA-g4mx-q9vg-27p4",
+      "https://urllib3.readthedocs.io/en/latest/security.html"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-g4mx-q9vg-27p4",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code only performs GET requests via requests.get, which do not include a request body. The vulnerability requires submitting sensitive data in the request body (form data or JSON) before a 303 redirect changes the method to GET while retaining the body. Since no body is sent, the attack condition cannot be satisfied.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "urllib3",
+    "version": "1.26.4",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "GHSA-pq67-6m6q-mj2v",
+    "aliases": [
+     "CVE-2025-50181",
+     "PYSEC-2026-1999"
+    ],
+    "severity": "MODERATE",
+    "summary": "urllib3 redirects are not disabled when retries are disabled on PoolManager instantiation",
+    "min_fix": "2.8.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "GHSA-pq67-6m6q-mj2v",
+     "vulnerable_symbols": [
+      "urllib3.PoolManager(retries=0)",
+      "urllib3.PoolManager(retries=urllib3.Retry(redirect=0))",
+      "urllib3.PoolManager(retries=False)"
+     ],
+     "trigger_conditions": "Passing the `retries` parameter during `urllib3.PoolManager` instantiation to disable redirects or restrict their number. The parameter is ignored, allowing redirects to proceed regardless of the value provided.",
+     "attack_vector": "SSRF exploitation via crafted redirect URLs. An application attempting to mitigate SSRF or open redirect vulnerabilities by disabling redirects at the PoolManager level will remain vulnerable because the `retries` parameter is ignored.",
+     "public_exploit": false,
+     "fix_notes": "Upgrade to a patched version of urllib3. Alternatively, disable redirects at the `request()` level using the `redirect` parameter instead of the `PoolManager()` level.",
+     "sources": [
+      "https://github.com/advisories/GHSA-pq67-6m6q-mj2v"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "GHSA-pq67-6m6q-mj2v",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The code uses requests.get without specifying any retries parameter, so urllib3.PoolManager is never instantiated with retries=0, retries=urllib3.Retry(redirect=0), or retries=False. The vulnerability only triggers when the retries parameter is passed to disable redirects, which does not occur in the provided code.",
+     "evidence": [
+      {
+       "file": "statuspage/checks.py",
+       "line": 7,
+       "snippet": "   5| def check(url: str, timeout: float = 3.0) -> str:\n   6|     try:\n   7|         r = requests.get(url, timeout=timeout)\n   8|     except requests.RequestException:\n   9|         return \"down\"",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/checks.py",
+       "line": 2,
+       "snippet": "   2| import requests",
+       "kind": "import-via"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/checks.py:7"
+     ],
+     "group": [],
+     "dev_only": ""
+    }
+   },
+   {
+    "package": "pyjwt",
+    "version": "1.7.1",
+    "ecosystem": "PyPI",
+    "manifest": "requirements.txt",
+    "vuln": "PYSEC-2026-177",
+    "aliases": [
+     "CVE-2026-48524",
+     "GHSA-fhv5-28vv-h8m8"
+    ],
+    "severity": "LOW",
+    "summary": "PyJWT is a JSON Web Token implementation in Python.",
+    "min_fix": "2.14.0",
+    "priority": "deprioritize",
+    "intel": {
+     "vuln_id": "PYSEC-2026-177",
+     "vulnerable_symbols": [
+      "pyjwt.PyJWKClient.get_signing_key"
+     ],
+     "trigger_conditions": "kid header from unverified JWT with unknown key ID forces HTTP request to JWKS endpoint; attacker can trigger unlimited outbound requests by sending crafted tokens with unknown kid values; vulnerability surfaces only when JWKS fetch fails and attacker provokes that with sustained unknown-kid traffic",
+     "attack_vector": "JWT with unknown kid value sent to application using PyJWKClient for key verification",
+     "public_exploit": null,
+     "fix_notes": "Fixed in PyJWT 2.13.0; updated implementation includes rate limiting and caching to prevent unbounded JWKS requests",
+     "sources": [
+      "PYSEC-2026-177",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429"
+     ],
+     "method": "llm",
+     "platforms": []
+    },
+    "reachability": {
+     "vuln_id": "PYSEC-2026-177",
+     "verdict": "not_reachable",
+     "confidence": 0.95,
+     "rationale": "The codebase only uses jwt.encode and jwt.decode for HS256 signing/verification. It never imports or calls PyJWKClient or any of its methods (get_signing_key, get_signing_keys, fetch_data, jwk_set_cache). Therefore the vulnerable feature is not invoked.",
+     "evidence": [
+      {
+       "file": "statuspage/auth.py",
+       "line": 5,
+       "snippet": "   5| import jwt",
+       "kind": "import"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 11,
+       "snippet": "   9| \n  10| def issue_admin_token(user: str, ttl: int = 3600) -> str:\n  11|     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n  12|     return token.decode(\"utf-8\")\n  13| ",
+       "kind": "call"
+      },
+      {
+       "file": "statuspage/auth.py",
+       "line": 16,
+       "snippet": "  14| \n  15| def verify_admin_token(token: str) -> str:\n  16|     claims = jwt.decode(token, SECRET, algorithms=[\"HS256\"])\n  17|     return claims[\"sub\"]",
+       "kind": "call"
+      }
+     ],
+     "method": "llm",
+     "cited": [
+      "statuspage/auth.py:5",
+      "statuspage/auth.py:11",
+      "statuspage/auth.py:16"
+     ],
+     "group": [
+      "GHSA-2gx3-rcp4-g85q"
+     ],
+     "dev_only": ""
+    }
+   }
+  ],
+  "fix": {
+   "status": "verified_with_code_changes",
+   "upgrades": {
+    "pyyaml": [
+     "5.3.1",
+     "6.0"
+    ],
+    "pyjwt": [
+     "1.7.1",
+     "2.14.0"
+    ],
+    "urllib3": [
+     "1.26.4",
+     "2.8.0"
+    ]
+   },
+   "compat_bumps": {
+    "requests": [
+     "2.25.1",
+     "2.30.0"
+    ]
+   },
+   "repairs": [
+    {
+     "iteration": 1,
+     "files": [
+      "statuspage/auth.py"
+     ],
+     "rationale": "The pyjwt 2.14.0 upgrade changed jwt.encode to return a string instead of bytes, causing an AttributeError when calling .decode('utf-8'). The fix is to return the token directly.",
+     "unmatched": [],
+     "rejected": [],
+     "tests_ok": true,
+     "summary": "3 passed, 2 warnings in 0.12s"
+    }
+   ],
+   "baseline": "3 passed in 0.10s",
+   "final": "3 passed, 2 warnings in 0.12s",
+   "notes": [
+    "pyyaml 5.4 fails to build on this Python; used 5.4.1 instead.",
+    "pyyaml 5.4.1 fails to build on this Python; used 6.0 instead.",
+    "fix.patch re-applied to a pristine copy with git apply; tests there: 3 passed, 2 warnings in 0.12s",
+    "pyjwt PYSEC-2025-183 has no patched release; mitigate in code (pyjwt v2.10.1 was discovered to contain weak encryption.)."
+   ],
+   "patch_applies": true,
+   "review": {
+    "ok": true,
+    "concerns": []
+   },
+   "patch_tests": "3 passed, 2 warnings in 0.12s",
+   "diff": "diff --git a/requirements.txt b/requirements.txt\n--- a/requirements.txt\n+++ b/requirements.txt\n@@ -1,7 +1,7 @@\n # Status page service \u2014 pinned in early 2021 and never touched since.\n jinja2==2.11.2\n markupsafe==1.1.1\n-pyyaml==5.3.1\n-pyjwt==1.7.1\n-requests==2.25.1\n-urllib3==1.26.4\n+pyyaml==6.0\n+pyjwt==2.14.0\n+requests==2.30.0\n+urllib3==2.8.0\ndiff --git a/statuspage/auth.py b/statuspage/auth.py\n--- a/statuspage/auth.py\n+++ b/statuspage/auth.py\n@@ -9,7 +9,7 @@\n \n def issue_admin_token(user: str, ttl: int = 3600) -> str:\n     token = jwt.encode({\"sub\": user, \"exp\": int(time.time()) + ttl}, SECRET, algorithm=\"HS256\")\n-    return token.decode(\"utf-8\")\n+    return token\n \n \n def verify_admin_token(token: str) -> str:\n"
+  }
+ },
+ "openvex": {
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "patchwise-1791062869",
+  "author": "Patchwise (automated; review before publishing)",
+  "timestamp": "2026-10-03T21:29:03+00:00",
+  "version": 1,
+  "statements": [
+   {
+    "vulnerability": {
+     "name": "GHSA-8q59-q68h-6hv4",
+     "aliases": [
+      "CVE-2020-14343",
+      "PYSEC-2021-142"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyyaml@5.3.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "affected",
+    "action_statement": "Upgrade pyyaml to 5.4"
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-752w-5fwx-jx9f",
+     "aliases": [
+      "CVE-2026-32597",
+      "PYSEC-2026-120"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "affected",
+    "action_statement": "Upgrade pyjwt to 2.14.0"
+   },
+   {
+    "vulnerability": {
+     "name": "PYSEC-2025-183",
+     "aliases": [
+      "CVE-2025-45768"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "affected",
+    "action_statement": "Upgrade pyjwt to 2.14.0"
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-gm62-xv2j-4w53",
+     "aliases": [
+      "CVE-2025-66418",
+      "PYSEC-2026-1998"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "affected",
+    "action_statement": "Upgrade urllib3 to 2.8.0"
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-q2q7-5pp4-w6pg",
+     "aliases": [
+      "CVE-2021-33503",
+      "PYSEC-2021-108"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "affected",
+    "action_statement": "Upgrade urllib3 to 2.8.0"
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-vxq7-64xx-v4gw",
+     "aliases": [
+      "CVE-2026-97689",
+      "PYSEC-2026-4177"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "affected",
+    "action_statement": "Upgrade urllib3 to 2.8.0"
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-hxm8-2xgr-2p9m",
+     "aliases": [
+      "CVE-2026-102269",
+      "PYSEC-2026-4147"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "affected",
+    "action_statement": "Upgrade pyjwt to 2.14.0"
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-ffc3-869f-jxw9",
+     "aliases": [
+      "CVE-2026-102268",
+      "PYSEC-2026-4145"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code calls jwt.decode only with algorithms=[\"HS256\"] and a plain string secret (SECRET), not a PEM key. The vulnerability requires a mixed HMAC/asymmetric algorithm list and a PEM key with specific formatting that bypasses is_pem_format; neither condition is met."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-9v7f-9g4p-ffgj",
+     "aliases": [
+      "CVE-2026-102267",
+      "PYSEC-2026-4144"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code imports jwt but only uses jwt.encode and jwt.decode with HS256; PyJWKClient is never instantiated or called, so the vulnerable feature is not exercised."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-ffqj-6fqr-9h24",
+     "aliases": [
+      "CVE-2022-29217",
+      "PYSEC-2022-202"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The decode call uses an explicit algorithms list [\"HS256\"] rather than the default list, and the secret key is a static string \"change-me\", not a public key. Thus the vulnerable condition (default algorithms + public key as HMAC secret) is not met."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-xgmm-8j9v-c9wx",
+     "aliases": [
+      "CVE-2026-48526",
+      "PYSEC-2026-179"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The verifier uses only HS256 algorithm and a string secret, not a raw-JSON JWK, and does not mix symmetric and asymmetric algorithms, so the confusion condition is not met."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-2xpw-w6gg-jr37",
+     "aliases": [
+      "CVE-2025-66471",
+      "PYSEC-2026-1994"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code uses requests.get without streaming; it downloads the full response body, not invoking urllib3's streaming API (HTTPResponse.stream, read, read1, read_chunked, readinto) in a way that exceeds a small requested chunk size. Therefore the decompression bomb condition is not triggered."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-38jv-5279-wg99",
+     "aliases": [
+      "CVE-2026-21441",
+      "PYSEC-2026-1996"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code uses requests.get without stream=True, which causes urllib3 to use preload_content=True (non\u2011streaming). The vulnerability requires streaming API usage with preload_content=False and redirect following enabled. Since the condition is not met, the flaw cannot be triggered."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-8988-9cw3-xx77",
+     "aliases": [
+      "CVE-2026-97687",
+      "PYSEC-2026-4175"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code calls requests.get without specifying proxies or verify=False, so it does not forward HTTPS requests through an HTTPS proxy with use_forwarding_for_https=True nor set cert_reqs='CERT_NONE' for the target. Therefore the vulnerable conditions are not satisfied."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-qccp-gfcp-xxvc",
+     "aliases": [
+      "CVE-2026-44431",
+      "PYSEC-2026-141"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code only uses requests.get, which internally uses urllib3 but does not expose or invoke ProxyManager.connection_from_url with assert_same_host=False. No evidence shows the vulnerable pattern is present."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-v845-jxx5-vc9f",
+     "aliases": [
+      "CVE-2023-43804",
+      "PYSEC-2023-192"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code uses requests.get with default redirect following, but there is no evidence that any Cookie header is ever sent (no cookie jar or manual cookies). The vulnerability requires a Cookie header to be present for exploitation, so the flaw cannot be triggered."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-cpwx-vrp4-4pq7",
+     "aliases": [
+      "CVE-2025-27516",
+      "PYSEC-2026-1471"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/jinja2@2.11.2"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code uses jinja2.Environment, not jinja2.sandbox.SandboxedEnvironment, and the template does not contain the '|attr' filter required to trigger the vulnerability. No SandboxedEnvironment or attr filter usage is present."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-g3rq-g295-4j3m",
+     "aliases": [
+      "CVE-2020-28493",
+      "PYSEC-2021-66",
+      "SNYK-PYTHON-JINJA2-1012994"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/jinja2@2.11.2"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code imports jinja2 and uses Markup and a custom badge filter, but never applies the urlize filter to any input. The vulnerability requires urlize to be invoked on user\u2011controlled data containing regex backtracking patterns, which does not occur in the provided source."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-h5c8-rqwp-cp95",
+     "aliases": [
+      "CVE-2024-22195",
+      "PYSEC-2026-1473"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/jinja2@2.11.2"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code defines a Jinja2 template string that does not use the xmlattr filter. No other Jinja templates are present, and there is no evidence of user\u2011controlled keys being passed to xmlattr."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-h75v-3vvj-5mfj",
+     "aliases": [
+      "CVE-2024-34064",
+      "PYSEC-2026-1474"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/jinja2@2.11.2"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code defines a Jinja2 template string that does not use the xmlattr filter. No other Jinja templates are present, and there is no evidence of user\u2011controlled keys being passed to xmlattr."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-q2x7-8rv6-6q7h",
+     "aliases": [
+      "CVE-2024-56326",
+      "PYSEC-2026-1475"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/jinja2@2.11.2"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code uses jinja2.Environment, not jinja2.sandbox.SandboxedEnvironment, and does not invoke the vulnerable methods (call_filter, _safe_format, _call_method). No sandboxed environment is present, so the attack vector requiring a custom filter calling format on a string via indirect reference cannot be triggered."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-2gx3-rcp4-g85q",
+     "aliases": [
+      "CVE-2026-101917",
+      "PYSEC-2026-4140"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The codebase only uses jwt.encode and jwt.decode for HS256 signing/verification. It never imports or calls PyJWKClient or any of its methods (get_signing_key, get_signing_keys, fetch_data, jwk_set_cache). Therefore the vulnerable feature is not invoked."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-jwrc-g2q2-pq5p",
+     "aliases": [
+      "CVE-2026-102270",
+      "PYSEC-2026-4148"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code only uses PyJWT for HS256 signing/verification with a hardcoded secret; it never passes attacker\u2011controlled bytes as a key or certificate to PyJWT's key preparation functions (_PEM_RE.search, is_pem_format). Therefore the vulnerable regex is not exercised."
+   },
+   {
+    "vulnerability": {
+     "name": "PYSEC-2026-175",
+     "aliases": [
+      "CVE-2026-48522",
+      "GHSA-993g-76c3-p5m4"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code imports jwt but only uses jwt.encode and jwt.decode with a static secret; there is no usage of PyJWKClient or any JKU URL ingestion, so the vulnerable feature is not exercised."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-9hjg-9r4m-mvj7",
+     "aliases": [
+      "CVE-2024-47081",
+      "PYSEC-2026-1872"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/requests@2.25.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code calls requests.get (statuspage/checks.py:7) which could leak .netrc credentials if a malicious URL is supplied, but there is no evidence that the url parameter originates from untrusted/user input; without such a precondition the vulnerability cannot be triggered."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-9wx4-h78v-vm56",
+     "aliases": [
+      "CVE-2024-35195",
+      "PYSEC-2026-1873"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/requests@2.25.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code uses requests.get which creates a new Session per call (via sessions.Session() context manager) and closes it after the request, so TLS context is not pooled across separate requests. The vulnerability requires reuse of the same Session object across a verify=False then verify=True request, which does not occur."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-gc5v-m9x4-r6x2",
+     "aliases": [
+      "CVE-2026-25645",
+      "PYSEC-2026-2275"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/requests@2.25.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code only uses requests.get; there is no call to requests.utils.extract_zipped_paths anywhere in the provided evidence, and nothing indicates that requests.get internally invokes that function."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-j8r2-6x86-q33q",
+     "aliases": [
+      "CVE-2023-32681",
+      "PYSEC-2023-74"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/requests@2.25.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code calls requests.get without specifying proxies or proxy credentials; there is no evidence that proxy credentials are present in the request URL or environment, so condition (1) for the vulnerability cannot be satisfied."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-34jh-p97f-mpxf",
+     "aliases": [
+      "CVE-2024-37891",
+      "PYSEC-2026-1995"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code uses requests.get without setting a Proxy-Authorization header or configuring proxies, so the vulnerable condition of manually setting Proxy-Authorization header while bypassing urllib3's proxy support is not present."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-g4mx-q9vg-27p4",
+     "aliases": [
+      "CVE-2023-45803",
+      "PYSEC-2023-212"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code only performs GET requests via requests.get, which do not include a request body. The vulnerability requires submitting sensitive data in the request body (form data or JSON) before a 303 redirect changes the method to GET while retaining the body. Since no body is sent, the attack condition cannot be satisfied."
+   },
+   {
+    "vulnerability": {
+     "name": "GHSA-pq67-6m6q-mj2v",
+     "aliases": [
+      "CVE-2025-50181",
+      "PYSEC-2026-1999"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/urllib3@1.26.4"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The code uses requests.get without specifying any retries parameter, so urllib3.PoolManager is never instantiated with retries=0, retries=urllib3.Retry(redirect=0), or retries=False. The vulnerability only triggers when the retries parameter is passed to disable redirects, which does not occur in the provided code."
+   },
+   {
+    "vulnerability": {
+     "name": "PYSEC-2026-177",
+     "aliases": [
+      "CVE-2026-48524",
+      "GHSA-fhv5-28vv-h8m8"
+     ]
+    },
+    "products": [
+     {
+      "@id": "pkg:pypi/pyjwt@1.7.1"
+     }
+    ],
+    "timestamp": "2026-10-03T21:29:03+00:00",
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path",
+    "impact_statement": "The codebase only uses jwt.encode and jwt.decode for HS256 signing/verification. It never imports or calls PyJWKClient or any of its methods (get_signing_key, get_signing_keys, fetch_data, jwk_set_cache). Therefore the vulnerable feature is not invoked."
+   }
+  ]
+ }
+}
