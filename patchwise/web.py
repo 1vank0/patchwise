@@ -84,7 +84,7 @@ class Guard:
     def live_status(self) -> tuple[bool, str]:
         if not ENV("NEBIUS_API_KEY"):
             return False, "Live runs are not configured on this server; the instant replay shows a recorded live run."
-        if self._spent_today() + MAX_COST > DAILY_BUDGET:
+        if self._spent_today() >= DAILY_BUDGET:  # the per-run cap bounds any overshoot
             return False, "Today's model budget for live runs is used up; the instant replay shows a recorded live run."
         return True, ""
 

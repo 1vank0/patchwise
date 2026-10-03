@@ -348,6 +348,8 @@ def test_web_guard_limits_concurrency_rate_and_budget(monkeypatch, tmp_path):
     g.acquire("1.2.3.4"); g.release()
     with pytest.raises(HTTPException):  # per-IP hourly limit
         g.acquire("1.2.3.4")
+    g.add_spend(0.05)  # a typical demo run leaves live runs on
+    assert g.live_status()[0] is True
     g.add_spend(web.DAILY_BUDGET)  # daily budget exhausted -> live runs off, replay still offered
     assert g.live_status()[0] is False
 
