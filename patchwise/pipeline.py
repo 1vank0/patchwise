@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -144,9 +145,14 @@ def run(repo: Path, settings: Settings | None = None, *, do_fix: bool = True, lo
     return r
 
 
+def repo_label(r: Run) -> str:
+    """How the repo is named in reports: PATCHWISE_REPO_LABEL (set by the web app) or the local path."""
+    return os.environ.get("PATCHWISE_REPO_LABEL") or str(r.repo)
+
+
 def to_json(r: Run) -> dict:
     return {
-        "repo": r.repo, "name": Path(r.repo).name, "mode": r.mode,
+        "repo": repo_label(r), "name": Path(r.repo).name, "mode": r.mode,
         "generated": time.strftime("%Y-%m-%d %H:%M", time.localtime(r.started)), "seconds": r.seconds, "deps_scanned": r.deps_scanned,
         "llm_usage": r.llm_usage, "tavily_calls": r.tavily_calls, "fix_scope": r.fix_scope,
         "items": [{

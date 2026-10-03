@@ -205,7 +205,8 @@ def run_cli(job: Job, target: Path, do_fix: bool, max_cost: float = MAX_COST, ti
     cmd = [sys.executable, "-u", "-m", "patchwise.cli", str(target), "--out", str(job.out),
            "--max-cost", f"{max_cost:.2f}"] + ([] if do_fix else ["--no-fix"])
     env = {k: v for k, v in os.environ.items() if k != "GITHUB_TOKEN"}  # the pipeline only needs model/search keys
-    env.update(PYTHONUNBUFFERED="1", PATCHWISE_CLEAN_SANDBOX="1")
+    label = job.label if job.kind == "github" else f"demo/{target.name}"
+    env.update(PYTHONUNBUFFERED="1", PATCHWISE_CLEAN_SANDBOX="1", PATCHWISE_REPO_LABEL=label)  # no server paths in reports
     p = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
     timer = threading.Timer(timeout, p.kill)
     timer.start()
@@ -338,6 +339,7 @@ def index():
     return (ASSETS / "index.html").read_text()
 
 
+@app.get("/health")  # Cloud Run's front end reserves /healthz
 @app.get("/healthz")
 def healthz():
     return {"ok": True}

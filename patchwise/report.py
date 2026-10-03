@@ -7,7 +7,7 @@ from pathlib import Path
 
 from jinja2 import Environment, select_autoescape
 
-from .pipeline import Run
+from .pipeline import Run, repo_label
 
 LABEL = {"fix-now": "Fix now", "review": "Needs review", "deprioritize": "Not reachable"}
 
@@ -22,7 +22,7 @@ def _counts(r: Run):
 def markdown_report(r: Run) -> str:
     c = _counts(r)
     lines = [f"# Patchwise report", "",
-             f"Repo: `{r.repo}` · mode: **{r.mode}** · {r.deps_scanned} pinned deps · "
+             f"Repo: `{repo_label(r)}` · mode: **{r.mode}** · {r.deps_scanned} pinned deps · "
              f"{len(r.items)} advisories · {r.seconds}s", "",
              f"**{c['fix-now']} fix now · {c['review']} need review · {c['deprioritize']} not reachable**", ""]
     if r.mode != "online":
