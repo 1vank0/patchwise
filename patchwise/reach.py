@@ -164,8 +164,6 @@ def wrappers_for(idx: "PyIndex", f: Finding, deps: list) -> list[str]:
     including optional extras (requests -> urllib3; requests -> urllib3 -> brotli, which
     urllib3 uses automatically whenever it is installed). Returns chains like
     'requests', 'requests > urllib3 (optional extra)'."""
-    if any(idx.imports.get(m.split(".")[0]) for m in module_names(f.dep.name)):
-        return []
     pinned = {d.name: d.version for d in deps if d.ecosystem == "PyPI"}
     out = []
     for d in deps:
@@ -252,6 +250,11 @@ dependencies. Use ONLY the evidence given. Rules:
 Judge the code as written: a precondition you can see is absent (no proxy configured, no
 sandbox used, no such filter in any template) means not_reachable, not uncertain. Consider
 where inputs come from (module docstrings and comments describe data sources).
+A package can be imported directly for one thing (e.g. werkzeug.security) and ALSO be driven by
+a framework that wraps it: a web framework (Flask -> Werkzeug, Django, Starlette) runs request
+parsing (forms, multipart, cookies, headers, routing) for every incoming request, whether or not
+the app touches that API, so parser flaws are reachable from the network in any app that serves
+HTTP with it. Debug-only features (Werkzeug debugger) count only if enabled in production config.
 For indirect use, reason about how the wrapper calls the vulnerable package internally, not
 only the arguments visible at the call site (e.g. requests always reads response bodies
 through urllib3's streaming API and follows redirects by default, even without stream=True).
@@ -302,8 +305,9 @@ def analyze(idx: PyIndex, f: Finding, intel: Intel, llm: LLM, deps: list | None 
     user = USER_TMPL.format(vid=intel.vuln_id, pkg=f.dep.name, ver=f.dep.version,
                             syms=", ".join(intel.vulnerable_symbols), trig=intel.trigger_conditions[:800],
                             vector=intel.attack_vector[:300], imports=", ".join(idx.third_party_imports()[:60]),
-                            wrappers=", ".join(wrappers) or ("imported directly" if any(
-                                e.kind == "import" for e in ev) else "no pinned dependency wraps it"),
+                            wrappers=(("imported directly; " if any(e.kind == "import" for e in ev) else "")
+                                      + (("also used through: " + ", ".join(wrappers)) if wrappers
+                                         else "no imported pinned dependency wraps it")),
                             templates=template_summary(idx),
                             evidence=evtext[:8000], sources=context_sources(idx, ev) or "(none)")
     try:
