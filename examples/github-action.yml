@@ -1,0 +1,21 @@
+# Example GitHub Action: run Patchwise on every PR that touches dependencies; fail if a reachable vuln is found.
+# To use it, copy this file to .github/workflows/patchwise.yml in your repo and add NEBIUS_API_KEY
+# (and optionally TAVILY_API_KEY) as repository secrets.
+name: patchwise
+on:
+  pull_request:
+    paths: ["**/requirements*.txt", "**/package-lock.json"]
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv tool install git+https://github.com/1vank0/patchwise
+      - run: patchwise . --fail-on fix-now --out patchwise-report
+        env:
+          NEBIUS_API_KEY: ${{ secrets.NEBIUS_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: patchwise-report, path: patchwise-report}

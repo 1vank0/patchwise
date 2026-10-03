@@ -91,6 +91,10 @@ pytest -q                                  # 25 offline tests (scripted model, n
 | `--max-cost 0.50` | Hard USD ceiling on model spend for the run |
 | `--fail-on fix-now\|review` | CI gate exit code |
 
+**GitHub Action:** [`examples/github-action.yml`](examples/github-action.yml) runs Patchwise on every pull request that
+touches dependencies and fails the check when a reachable vulnerability is found. Copy it to `.github/workflows/patchwise.yml`
+in your repo and add `NEBIUS_API_KEY` (and optionally `TAVILY_API_KEY`) as repository secrets.
+
 Other settings come from environment variables: `PATCHWISE_MAX_REPAIRS` (default 8), `PATCHWISE_MAX_COST` (default $1), and
 `PATCHWISE_SPEND_LOG` (path to a JSONL cost ledger).
 
