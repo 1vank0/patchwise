@@ -626,7 +626,7 @@ def validate_pin_bumps(sb: Sandbox, bumps, security: dict[str, str],
         # its newest release is the likeliest to support them (seen live: the model asked for
         # flask-babel 3.0.0, which still caps Flask<3; 4.0.0 works). If the newest release is
         # not installable here, the resolver step after this falls back to the lowest one that is.
-        best = max(avail) if avail and max(avail) >= want else None
+        best = max(avail) if avail else None
         if best:
             ok[k] = str(best)
         elif rejected is not None:
