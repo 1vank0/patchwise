@@ -748,6 +748,7 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
     if run.summary == "dependency install failed":
         res.notes.append("Upgraded dependency set could not be installed; code repair skipped "
                          "(an install failure is not something application edits can fix).")
+    empty = 0
     feedback = None  # concerns from the post-fix review, fed back as a repair round
     reviews = 0
     while llm.online and run.summary != "dependency install failed" and it < settings.max_repair_iterations:
@@ -830,7 +831,12 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
                             "rejected": rejected,
                             "tests_ok": run.ok, "summary": run.summary})
         if not changed and not rejected and not bad_pins and not pin_note and not unmatched:
-            break
+            empty += 1
+            res.repairs[-1]["rationale"] += " (no applicable edits returned)"
+            if empty >= 2:
+                break
+        else:
+            empty = 0
     res.final = run
     res.diff = sb.diff()
     res.patch_applies, why, res.patch_tests = sb.verify_patch(res.diff)
