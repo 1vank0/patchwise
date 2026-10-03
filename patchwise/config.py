@@ -37,7 +37,7 @@ class Settings:
     # Offline mode uses a deterministic heuristic stand-in for the LLM. For tests/dev only;
     # it is NOT the product and is clearly labeled in reports.
     offline: bool = field(default_factory=lambda: os.environ.get("PATCHWISE_OFFLINE", "0") == "1")
-    max_repair_iterations: int = int(os.environ.get("PATCHWISE_MAX_REPAIRS", "3"))
+    max_repair_iterations: int = int(os.environ.get("PATCHWISE_MAX_REPAIRS", "5"))
     test_command: str | None = os.environ.get("PATCHWISE_TEST_CMD")
     test_timeout: int = int(os.environ.get("PATCHWISE_TEST_TIMEOUT", "900"))
     python_version: str | None = os.environ.get("PATCHWISE_PYTHON")

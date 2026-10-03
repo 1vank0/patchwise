@@ -111,7 +111,7 @@ def to_json(r: Run) -> dict:
             "status": r.fix.status, "upgrades": r.fix.upgrades, "compat_bumps": r.fix.compat_bumps, "repairs": r.fix.repairs,
             "baseline": r.fix.baseline and r.fix.baseline.summary,
             "final": r.fix.final and r.fix.final.summary, "notes": r.fix.notes,
-            "patch_applies": r.fix.patch_applies,
+            "patch_applies": r.fix.patch_applies, "review": r.fix.review,
             "patch_tests": r.fix.patch_tests and r.fix.patch_tests.summary,
         },
     }

@@ -100,12 +100,14 @@ def test_repair_loop_end_to_end(tmp_path):
         {"file": "statuspage/render.py", "search": "@contextfilter", "replace": "@pass_context"},
         {"file": "statuspage/auth.py", "search": '    return token.decode("utf-8")',
          "replace": '    return token if isinstance(token, str) else token.decode("utf-8")'}]}
-    llm = FakeLLM([json.dumps(edits)])
+    llm = FakeLLM([json.dumps(edits), '{"ok": true, "concerns": []}'])
     res = fix(repo, findings, Settings(offline=True), llm, None, log=lambda *a: None)
     assert res.baseline.ok
     assert res.status == "verified_with_code_changes", (res.final.summary, res.final.output[-800:])
     assert res.compat_bumps.get("markupsafe")
     assert "pass_context" in res.diff and "jinja2==3.1.6" in res.diff
+    assert res.review == {"ok": True, "concerns": []} and llm.prompts[-1][0] == "reason"
+    assert res.patch_applies and res.patch_tests.ok
 
 
 def test_repair_cannot_introduce_security_regressions(tmp_path):

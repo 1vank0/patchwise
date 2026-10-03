@@ -39,6 +39,7 @@ class FixResult:
     repairs: list = field(default_factory=list)       # [{iteration, files, rationale, tests_ok}]
     diff: str = ""
     patch_tests: TestRun | None = None
+    review: dict | None = None   # post-fix review of the code changes: {"ok": bool, "concerns": [...]}
     patch_applies: bool = False   # fix.patch re-applied to a pristine copy with git apply --check
     status: str = "not_run"   # verified | verified_with_code_changes | tests_fail | no_tests | skipped
     notes: list = field(default_factory=list)
@@ -632,6 +633,37 @@ def validate_pin_bumps(sb: Sandbox, bumps, security: dict[str, str],
     return ok
 
 
+REVIEW_SYSTEM = """You review a dependency-upgrade patch whose tests already pass. Find behaviour
+the APPLICATION CODE EDITS removed or broke that tests may not cover: a decorator or callback
+registration deleted without being re-registered elsewhere, a feature disabled, an exception
+swallowed, a security check weakened, a removed import still used. Ignore style, the
+requirements changes themselves, and harmless modernisations. Be concrete and brief."""
+
+REVIEW_TMPL = """Upgrades: {upgrades}
+Repair rationales: {rationales}
+
+Patch (code part):
+{diff}
+
+Return JSON: {{"ok": true|false, "concerns": [str]}}  (ok=true when nothing was lost)"""
+
+
+def review_diff(llm: LLM, diff: str, res: "FixResult") -> dict:
+    code = "".join(c for c in re.split(r"(?=^diff --git )", diff, flags=re.M)
+                   if c.startswith("diff --git") and "requirements" not in c.splitlines()[0])
+    if not code.strip():
+        return {"ok": True, "concerns": []}
+    try:
+        d = llm.chat_json("reason", REVIEW_SYSTEM, REVIEW_TMPL.format(
+            upgrades=", ".join(f"{k} {a}->{b}" for k, (a, b) in res.upgrades.items()),
+            rationales=" | ".join(r["rationale"][:200] for r in res.repairs if r.get("rationale")),
+            diff=code[:12000]), max_tokens=4000, want=("ok", "concerns"), tag="review", temperature=0.0)
+    except LLMError as e:
+        return {"ok": True, "concerns": [], "error": str(e)[:200]}
+    concerns = [str(c) for c in (d.get("concerns") or []) if str(c).strip()][:5]
+    return {"ok": bool(d.get("ok")) and not concerns, "concerns": concerns}
+
+
 def migration_notes(tavily: Tavily | None, upgrades: dict) -> str:
     if not tavily or not tavily.enabled:
         return "(none)"
@@ -710,8 +742,19 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
     if run.summary == "dependency install failed":
         res.notes.append("Upgraded dependency set could not be installed; code repair skipped "
                          "(an install failure is not something application edits can fix).")
-    while (not run.ok and run.summary != "dependency install failed"
-           and it < settings.max_repair_iterations and llm.online):
+    feedback = None  # concerns from the post-fix review, fed back as a repair round
+    reviews = 0
+    while llm.online and run.summary != "dependency install failed" and it < settings.max_repair_iterations:
+        if run.ok and not feedback:
+            if not res.repairs or reviews >= 2:
+                break
+            reviews += 1
+            res.review = review_diff(llm, sb.diff(), res)
+            log(f"  review {reviews}: {'behaviour preserved' if res.review.get('ok') else res.review.get('concerns')}")
+            if res.review.get("ok"):
+                break
+            feedback = "; ".join(res.review.get("concerns") or [])
+            continue
         it += 1
         notes = notes or migration_notes(tavily, res.upgrades)
         files = _relevant_files(sb, run.output, list(res.upgrades) + list(res.compat_bumps))
@@ -725,7 +768,10 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
                 sb, files, list(res.upgrades) + list(res.compat_bumps)),
                 upgraded=list(res.upgrades) + list(res.compat_bumps)), history=history and "\nEarlier repair attempts (the files"
             " below already include their edits):" + history + "\n",
-            output=run.output[-6000:], pins=", ".join(f"{k}=={v}" for k, v in sb.current_pins().items())[:3000],
+            output=(run.output[-6000:] if not feedback else
+                    "The tests PASS, but a code review of the current diff found behaviour that was "
+                    "lost or broken by the edits (the tests do not cover it). Fix it:\n- " + feedback
+                    + "\n\nCurrent diff:\n" + sb.diff()[-5000:]), pins=", ".join(f"{k}=={v}" for k, v in sb.current_pins().items())[:3000],
             files="\n\n".join(f"### {n}\n```python\n{c}\n```" for n, c in files.items()))
         try:
             d = llm.chat_json("deep", REPAIR_SYSTEM, user, max_tokens=8000, want=("edits", "pin_bumps", "rationale"), tag="repair")
@@ -769,6 +815,9 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
         run = sb.test()
         if run.summary == "dependency install failed":
             res.notes.append(f"repair {it}: dependency install failed after edits; stopping.")
+        if feedback:
+            res.notes.append(f"repair {it}: addressed review concern: {feedback[:300]}")
+            feedback = None
         res.repairs.append({"iteration": it, "files": changed,
                             "rationale": str(d.get("rationale") or d.get("explanation") or d.get("summary")
                                              or "") + pin_note, "unmatched": unmatched,
@@ -784,6 +833,11 @@ def fix(repo: Path, findings: list[Finding], settings: Settings, llm: LLM, tavil
     elif res.patch_tests is not None:
         res.notes.append(f"fix.patch re-applied to a pristine copy with git apply; tests there: "
                          f"{res.patch_tests.summary}")
+    if run.ok and res.repairs and llm.online and res.review is None:
+        res.review = review_diff(llm, res.diff, res)
+    if res.review and not res.review.get("ok"):
+        res.notes.append("Reviewer concerns NOT resolved (tests pass, but check by hand): "
+                         + "; ".join(res.review.get("concerns") or []))
     if run.ok and run.summary == "no tests collected":
         res.status = "no_tests"
     elif run.ok and res.patch_applies and res.patch_tests is not None and res.patch_tests.ok:
