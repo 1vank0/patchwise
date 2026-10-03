@@ -41,3 +41,6 @@ never passed to the pipeline or to project code.
 The worst-case model spend is the daily budget × days. The deploy default is $0.50/day, roughly 11 live demo runs a day. That is ≈ $35 through Dec 15 only if
 the demo were maxed out every single day, so the prepaid Token Factory balance is the real hard stop. The replay keeps working after the
 budget (or the credit) is used up. Raise the budget for the judging window (Dec 1–15) if credit allows.
+
+Budget and rate-limit counters live under `PATCHWISE_WORK_DIR` (default `/tmp/patchwise-web`), which resets when the machine restarts.
+For durable counters, attach a 1 GB Fly volume (≈ $0.15/mo) and point `PATCHWISE_WORK_DIR` at it.
