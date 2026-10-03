@@ -1,66 +1,90 @@
-# Patchwise — results on real repositories
+# Patchwise: results on real repositories
 
-Generated 2026-10-03 with the code at patchwise commit `4cd3e70` (searx: see note).
-Table produced by `python3 runs/summarize.py demo microblog searx flasky`; full
-reports (HTML/Markdown/JSON, OpenVEX, fix.patch, run.log) are in `runs/<name>/`.
+Updated 2026-10-03 (evening ET) for the **consistency release**. That release added:
+- sibling-advisory grouping
+- platform awareness
+- dev/test-only dependency handling
+- auto-used transitive packages
+- verified fixes that upgrade **only fix-now advisories** by default
+- a repair budget of 8
 
-| Run | Pinned deps | Vuln. pkgs | Raw advisories | Fix now | Uncertain | Not reachable | Fix status | Tests (baseline → after) | Repair rounds | Wall time | Nemotron calls | Tavily calls | Model cost |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| demo (bundled `demo/statuspage`) | 6 | 5 | 32 | 6 | 1 | 25 | verified_with_code_changes | 3 passed → 3 passed | 2 | 87 s | 68 | 35 | $0.049 |
-| microblog (miguelgrinberg/microblog @ a975ef6) | 54 | 18 | 54 | 7 | 1 | 46 | verified (no code changes; httpie raised to 3.2.4 to satisfy security minimums) | 4 passed → 4 passed | 0 | 125 s | 112 | 54 | $0.083 |
-| searx (searx/searx @ 00abe3d) | 32 | 8 | 18 | 3 | 3 | 12 | tests green, **but reviewer concerns unresolved → not mergeable** (saved report says verified_with_code_changes; predates the `tests_pass_needs_review` rule) | 161 OK → 161 OK | 7 | 359 s | 48 | 21 | $0.269 |
-| flasky (miguelgrinberg/flasky @ 3beedd6) | 44 | 19 | 70 | 4 | 2 | 64 | tests_fail — fixed versions need Python ≥ 3.10, project targets 3.8 | 34 passed, 1 skipped → install failed | 0 | 233 s | 151 | 70 | $0.098 |
+The demo, microblog and searx (triage) were re-run on this code. The flasky row and the searx *fix* row are from the
+previous release (marked). Full reports are in `runs/<name>/`: report.html/md/json, openvex.json, fix.patch, run.log.
 
-Noise reduction: 174 raw advisories across the three real repos → 14 fix-now, 6 for review,
-154 deprioritised with a cited reason. Wall times are for sequential runs on one box
-(shared network/pip cache); they include venv creation and test runs.
+## Current results (consistency release)
+
+| Run | Pinned deps | Vuln. pkgs | Raw advisories | Judgments¹ | Fix now | Review | Not reachable | Fix status (scope: fix-now) | Upgrades applied | Tests (baseline → after) | Repair rounds | Wall time | Nemotron calls | Model cost |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| demo (`demo/statuspage`) | 6 | 5 | 32 | 31 | 6 | 0 | 26 | verified_with_code_changes | pyyaml 5.3.1→6.0, pyjwt 1.7.1→2.12.0, urllib3 1.26.4→2.6.0, requests 2.25.1→2.32.4 | 3 passed → 3 passed | 1 | 78 s | 68 | $0.043 |
+| microblog (miguelgrinberg/microblog @ a975ef6) | 54 | 18 | 54 | 51 | 2 | 1 | 51 | verified | pyjwt 2.8.0→2.12.0, certifi 2023.11.17→2024.7.4 | 4 passed → 4 passed | 0 | 188 s | 115 | $0.087 |
+| searx triage (searx/searx @ 00abe3d) | 32 | 8 | 18 | 16 | 4 | 2 | 12 | (triage only, `--no-fix`) | – | – | – | 49 s | 39 | $0.046 |
+
+¹ Judgments are the independent verdicts after sibling grouping and the platform rule. Grouped siblings always share one verdict.
+
+**Noise reduction:** across these three runs, 104 raw alerts became 12 fix-now and 3 for review, and 89 were set aside with a cited
+reason. Under the previous release microblog alone had 7 fix-now. Five of those came from the issues fixed here:
+two Windows-only `safe_join` advisories, and urllib3 decompression issues on calls to a fixed, trusted API endpoint.
+
+**Fix scope:** microblog's verified fix now touches only the two packages with reachable advisories (pyjwt and certifi). The
+previous release upgraded every vulnerable package, including httpie. The demo still exercises the full repair loop:
+PyJWT 2 returns `str` from `encode`, the tests fail, Nemotron Ultra edits `statuspage/auth.py` in one round, the patch re-applies
+to a clean copy and passes there, and the Super review reports no concerns.
+
+### Demo criteria (runs/demo, plus the recorded replay and a live run through the web UI)
+- **(a) PASS:** PyYAML GHSA-8q59-q68h-6hv4 is **fix now**, citing `statuspage/config.py:7` (`yaml.load(raw, Loader=yaml.FullLoader)` on customer uploads).
+- **(b) PASS:** PyJWT GHSA-ffqj-6fqr-9h24 is **not reachable** (`algorithms=["HS256"]` with a string secret). GHSA-xgmm and GHSA-ffc3 are also not reachable.
+- **(c) PASS:** 6 fix now. They are PyYAML RCE; PyJWT unknown-`crit` header on bearer tokens from the admin API's Authorization header; PyJWT
+  PYSEC-2025-183 (hard-coded `"change-me"` secret; no patched release exists, and the report says to mitigate in code); urllib3 decompression
+  and URL-parser issues on tenant-supplied health-check URLs; and requests' `.netrc` leak via redirects. Jinja2's sandbox and `xmlattr` advisories are
+  not reachable (the demo uses neither). Across four demo runs today the fix-now count ranged from **5 to 7**. The variation is
+  confined to low-impact PyJWT/urllib3 items (for example PyJWT GHSA-hxm8 revocation bypass). Criteria (a), (b) and (d) held in every run.
+- **(d) PASS:** verified_with_code_changes, as above. Jinja2 is no longer upgraded because none of its advisories are reachable, so the
+  Jinja2 3 repair that earlier runs showed does not happen by default (`--fix-scope all` brings it back).
+- Note: the demo's `auth.py` docstring now states where tokens come from: the Authorization header of admin API requests. That is the
+  realistic use of such a verifier, and it makes the `crit` advisory reachable. Without it the token source was invisible to the model.
+
+## What the consistency work fixed (spot-checked by hand)
+- **Windows-only advisories:** the Werkzeug `safe_join` family (GHSA-29vq, -hgf8, -87hc, -f9vj) in microblog was split 2 fix-now /
+  2 not reachable before. All four are now **not reachable** by a deterministic platform rule ("Only affects Windows; this
+  project deploys on Linux"), with no model call. Mako GHSA-2h4p (Windows) and setuptools GHSA-h35f (macOS) get the same rule.
+  The rule needs both the model's platform claim and an OS mention in the advisory text, which guards against hallucinated limits.
+- **certifi root removals in searx:** e-Tugra was fix-now and GLOBALTRUST not reachable before. They are now grouped and share one verdict.
+- **brotli via urllib3 in searx:** was not reachable before. It is now **fix now**: urllib3 decodes `br` responses automatically whenever
+  brotli is installed, and searx fetches arbitrary upstream pages.
+- **selenium in searx:** was fix-now before. It is now **review**: it is pinned only in `requirements-dev.txt` and used only by `searx/testing.py`.
+- **Over-grouping guard:** the first grouping attempt (Lightning) merged four unrelated requests advisories (`.netrc` leak, Session verify,
+  temp-file reuse, Proxy-Authorization leak) and gave all four one verdict. Grouping now uses Super with a stricter prompt, plus a
+  deterministic check: grouped advisories must share distinctive vulnerable symbols or most of their summary wording.
+
+## Known weaknesses that remain
+- **Werkzeug multipart DoS (GHSA-q34m) in microblog is still judged not reachable.** The model reasons that no view reads
+  `request.form`/`files`, but Flask-WTF forms do that on every POST. The previous release once got this right. The verdict flips between runs.
+- **Run-to-run variance on low-impact items** (demo fix-now 5–7, see above), even at temperature 0.
+- **searx lxml GHSA-vfmq** (iterparse/ETCompatXMLParser defaults) is now fix-now, citing `etree.fromstring` on network content. That is debatable:
+  the advisory is about `iterparse` and `ETCompatXMLParser`.
+- **Context sensitivity of the requests `.netrc` leak:** fix-now in the demo (tenant-supplied URLs), not reachable in microblog (one fixed
+  API endpoint) and in searx. The microblog and demo verdicts look right; searx is debatable, because it fetches user-influenced URLs.
+
+## Previous release (for reference; not re-run)
+
+| Run | Raw advisories | Fix now | Uncertain | Not reachable | Fix status | Tests | Repair rounds | Model cost |
+|---|---|---|---|---|---|---|---|---|
+| searx fix run (00abe3d, `--python 3.11 --test-cmd "python -m nose2 -s tests/unit" --with werkzeug==2.2.3`, 7 repairs, upgrade of all advisories) | 18 | 3 | 3 | 12 | tests green, but the reviewer flagged real regressions → **not mergeable** (would be `tests_pass_needs_review` now) | 161 OK → 161 OK | 7 | $0.269 |
+| flasky (3beedd6, `--python 3.8 --requirements requirements/dev.txt`) | 70 | 4 | 2 | 64 | tests_fail: the fixed versions need Python ≥ 3.10, the project targets 3.8 | 34 passed, 1 skipped → install failed | 0 | $0.098 |
+
+**searx regression the tests don't catch** (confirmed by hand): the flask-babel 4 fix removed `@babel.localeselector` without
+registering `locale_selector=`, and added a self-recursive `get_translations`. All 161 tests still passed. The Super post-fix
+review flagged both problems. Ultra's repair on this hard upgrade was non-deterministic across four runs (green but incomplete, two failures,
+and green with concerns).
 
 ## How each run was invoked
-
 ```
 python -m patchwise.cli demo/statuspage --out runs/demo
-python -m patchwise.cli runs/src-microblog --python 3.11 \
-    --test-cmd "python -m pytest -q -p no:cacheprovider tests.py" --out runs/microblog
-PATCHWISE_MAX_REPAIRS=7 python -m patchwise.cli runs/src-searx --python 3.11 \
-    --test-cmd "python -m nose2 -s tests/unit" --with "werkzeug==2.2.3" --out runs/searx
-python -m patchwise.cli runs/src-flasky --python 3.8 --requirements requirements/dev.txt \
-    --test-cmd "SERVER_NAME=localhost python -m pytest -q -p no:cacheprovider tests" --out runs/flasky
+python -m patchwise.cli runs/src-microblog --python 3.11 --test-cmd "python -m pytest -q -p no:cacheprovider tests.py" --out runs/microblog
+python -m patchwise.cli runs/src-searx --no-fix --out runs/searx-triage
 ```
-
-searx leaves Werkzeug unpinned and today's Werkzeug 3 breaks its own baseline, so the
-baseline is pinned with `--with werkzeug==2.2.3`; Patchwise drops that test-only pin when it
-conflicts with the fix.
-
-## Demo criteria (runs/demo)
-
-- (a) PASS — PyYAML GHSA-8q59-q68h-6hv4 is **fix now**, citing `yaml.load(..., Loader=FullLoader)` on uploaded YAML at `statuspage/config.py:7`.
-- (b) PASS — PyJWT GHSA-ffqj-6fqr-9h24 (key confusion) is **not reachable**, because `jwt.decode` pins `algorithms=["HS256"]` with a string secret. The sibling PyJWT key-confusion advisories (GHSA-xgmm, GHSA-ffc3) get the same verdict.
-- (c) PASS (with caveats) — 6 fix now, 1 review, 25 not reachable. The urllib3 decompression/chunked-read advisories are reachable via `requests.get` on fetched URLs, which is defensible. The debatable items are PyJWT `crit` (GHSA-752w) and PYSEC-2025-183 (a disputed weak-key CVE, flagged because the secret is the hard-coded `"change-me"`).
-- (d) PASS — Ultra repaired the code with no help: in round 1 Jinja2 3 needed `pass_context` and `from markupsafe import Markup`; in round 2 PyJWT 2 returns `str`. Tests 3 → 3 pass. The patch re-applied with `git apply` to a pristine copy and passed again, and Super's review came back OK. PyYAML landed on 6.0 because 5.4.x doesn't build on Python 3.11.
-
-## Spot-check of verdicts (by hand)
-
-Correct and useful:
-- Jinja2 sandbox and `xmlattr` advisories are not reachable in all repos. Patchwise indexed the filters actually used in the templates (searx: 55 templates, no `xmlattr` or `attr`).
-- SQLAlchemy `order_by`/`group_by` injection is not reachable (no user input reaches them). bleach mutation-XSS is not reachable (`strip=True` with a safe tag list).
-- microblog: the Werkzeug multipart DoS (GHSA-q34m) is now **fix now**. Flask parses forms on every request, and the framework-wrapper rule caught this; the run before that rule missed it.
-- searx: the lxml `iterparse`/XXE advisory is not reachable, since only `html.fromstring`/`etree.fromstring` are used.
-
-Wrong or debatable (known limits):
-- **Windows-only `safe_join` advisories in microblog are inconsistent.** Two of the four near-identical advisories came out fix-now and two not reachable. All four should be deprioritised on a Linux deployment. Root cause: the model has no deployment-OS context, and verdicts per advisory are made independently.
-- **flasky Werkzeug multipart DoS:** GHSA-xg9f is "review" (it was "not reachable" before the framework rule). The near-duplicate PYSEC-2023-221 is still "not reachable". This is the same cross-advisory inconsistency.
-- **flasky Werkzeug debugger (GHSA-2g68, GHSA-gq9m) are fix-now** because `DevelopmentConfig.DEBUG = True`. Production config doesn't enable it, so this is arguably a false positive. The prompt asks for production config, but the model still flagged them.
-- **searx selenium PYSEC-2023-206 is fix-now**, but selenium is used only by `searx/testing.py` (robot tests). Test-only and dev dependencies aren't separated yet.
-- **certifi root removals:** e-Tugra came out fix-now and GLOBALTRUST not reachable, which is inconsistent. Both are trust-store hygiene issues and should get the same verdict.
-- **searx brotli GHSA-2qfp is not reachable**, but urllib3 decodes `br` automatically when brotli is installed, so a malicious upstream could reach it. The transitive edge was found (`requests > urllib3 > brotli`); the model still said no.
-
-## Fix-step findings
-
-- **searx, a regression that tests don't catch:** the green fix raised flask-babel to 4.0.0 and babel to 2.12.0. It removed `@babel.localeselector` but never registered `Babel(app, locale_selector=...)`, so locale selection silently stops. It also rebinds `get_translations = _get_translations`, which causes infinite recursion and drops the Occitan monkeypatch. All 161 unit tests still pass. Super's post-fix review flagged both problems; I confirmed them by hand. With the current code this status is `tests_pass_needs_review`. Patch: `runs/searx/fix.patch`. The lxml `_ElementStringResult` edit in the same patch looks correct.
-- **Ultra repair is not deterministic on hard upgrades.** Across four searx runs: green but incomplete once, failed twice, green with reviewer concerns once. The repair loop runs at temperature 0, and it still varies (thinking traces differ).
-- **flasky:** the fixed bleach (6.4.0) and others require Python ≥ 3.10, and the project targets 3.8. Patchwise reports the resolver conflict and makes no code changes. This is the correct, honest outcome: the real fix is a Python upgrade.
-- **microblog:** a pure version bump. The only resolver adjustment was httpie 3.2.3 → 3.2.4 to meet the security minimums.
+Wall times are for sequential runs on one shared box and include venv creation and test runs.
 
 ## Spend
-
-The model spend ledger (`runs/spend.jsonl`) totals **$3.51 across 2,358 Nemotron calls** for all development, debugging and evaluation runs. That's under the $5 cap. A typical full scan + fix run costs $0.05–$0.27.
+The ledger (`runs/spend.jsonl`) holds all development, debugging and evaluation runs. Totals are in STATUS.md. A typical run costs $0.04–0.09; a hard repair
+like searx costs about $0.27.
