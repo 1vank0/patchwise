@@ -51,7 +51,7 @@ def main(argv=None) -> int:
     out = a.out or (a.repo / ".patchwise" / "report")
     save(r, out)
     c = {p: sum(1 for it in r.items if it.priority == p) for p in ("fix-now", "review", "deprioritize")}
-    print(f"\n{c['fix-now']} fix now · {c['review']} review · {c['deprioritize']} not exploitable here")
+    print(f"\n{c['fix-now']} fix now · {c['review']} review · {c['deprioritize']} not reachable")
     if r.fix:
         print(f"fix: {r.fix.status}")
     if r.llm_usage.get("calls"):

@@ -117,7 +117,8 @@ def run(repo: Path, settings: Settings | None = None, *, do_fix: bool = True, lo
     for it in r.items:
         cite = f" ({it.reach.cited[0]})" if it.reach.cited else ""
         note = " [dev/test only]" if it.reach.dev_only and it.reach.verdict == "reachable" else ""
-        log(f"      {it.priority:>12}  {it.finding.dep.name} {it.vuln_id}{cite}{note}")
+        tag = {"fix-now": "FIX NOW", "review": "REVIEW", "deprioritize": "not reachable"}[it.priority]
+        log(f"      {tag:>13}  {it.finding.dep.name} {it.vuln_id}{cite}{note}")
     if do_fix and findings:
         targets = fix_targets(r.items, settings.fix_scope)
         r.fix_scope = settings.fix_scope
