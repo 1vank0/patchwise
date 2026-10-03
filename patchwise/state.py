@@ -109,8 +109,8 @@ class GcsState:
     def _get(self) -> tuple[dict, int]:
         r = self.client.get(f"{GCS}/storage/v1/b/{self.bucket}/o/{self.obj}", params={"alt": "media"},
                             headers={"Authorization": f"Bearer {self._token()}"})
-        if r.status_code == 404:
-            return empty(), 0
+        if r.status_code == 404 and "no such object" in r.text.lower():
+            return empty(), 0  # first use: the object doesn't exist yet (a missing *bucket* is an error)
         r.raise_for_status()
         return normalize(r.json()), int(r.headers.get("x-goog-generation", "0"))
 

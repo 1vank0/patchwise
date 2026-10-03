@@ -11,15 +11,17 @@ class FakeGcs:
     """Minimal Cloud Storage JSON API: one object, generation numbers, ifGenerationMatch."""
 
     def __init__(self):
-        self.body, self.gen, self.down, self.conflicts = None, 0, False, 0
+        self.body, self.gen, self.down, self.conflicts, self.missing_bucket = None, 0, False, 0, False
 
     def __call__(self, req: httpx.Request) -> httpx.Response:
         if self.down:
             raise httpx.ConnectError("unreachable")
         assert req.headers["authorization"] == "Bearer t"
         if req.method == "GET":
+            if self.missing_bucket:
+                return httpx.Response(404, json={"error": {"message": "The specified bucket does not exist."}})
             if self.body is None:
-                return httpx.Response(404)
+                return httpx.Response(404, text="No such object: b/web-guard.json")
             return httpx.Response(200, content=self.body, headers={"x-goog-generation": str(self.gen)})
         want = int(req.url.params["ifGenerationMatch"])
         if self.conflicts:
@@ -111,3 +113,10 @@ def test_job_spend_counts_killed_runs(tmp_path):
 def test_new_day_resets_budget_keeps_recent_hits(monkeypatch):
     d = state.normalize({"day": "2000-01-01", "spent": 9, "hits": {"k": [0.0]}})
     assert d["spent"] == 0.0 and d["hits"] == {}
+
+
+def test_missing_bucket_is_unavailable_not_empty(gcs, guard):
+    fake, _ = gcs
+    fake.missing_bucket = True
+    assert guard.snapshot(fresh=True) is None
+    assert guard.live_status(fresh=True)[0] is False
